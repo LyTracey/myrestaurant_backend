@@ -20,8 +20,8 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('myrestaurant', include('myrestaurant_app.urls')),
-    path('user', include('user_app.urls'))
+    path('myrestaurant/', include('myrestaurant_app.urls')),
+    path('user/', include('user_app.urls'))
 ] + static(
     settings.STATIC_URL, document_root=settings.STATIC_ROOT
 ) + static(

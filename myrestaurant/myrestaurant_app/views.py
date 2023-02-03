@@ -27,7 +27,7 @@ class MenuViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = MenuSerializer(instance, request.data, partial=True)
         if serializer.is_valid():
-            overwrite(serializer)
+            # overwrite(serializer)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -35,7 +35,8 @@ class MenuViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = MenuSerializer(data=request.data)
         if serializer.is_valid():
-            overwrite(serializer)
+            
+            # overwrite(serializer)
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
