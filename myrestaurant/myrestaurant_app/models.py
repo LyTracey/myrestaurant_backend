@@ -9,7 +9,7 @@ class Inventory(models.Model):
     image = models.ImageField(upload_to='inventory', blank=True)
     
     def save(self, *args, **kwargs):
-        auto_slug(self)
+        auto_slug(self, self.ingredient)
         super().save(*args, **kwargs)
         
     class Meta:
@@ -30,7 +30,7 @@ class Menu(models.Model):
         db_table = "menu"
 
     def save(self, *args, **kwargs):
-        auto_slug(self)
+        auto_slug(self, self.title)
         super().save(*args, **kwargs)
     
     def __str__(self):

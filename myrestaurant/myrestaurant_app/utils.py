@@ -6,9 +6,9 @@ from django.utils.text import slugify
 logger = logging.getLogger("general")
 
 # Slugify
-def auto_slug(self):
+def auto_slug(self, property):
     if not self.slug:
-        self.slug = slugify(self.ingredient)
+        self.slug = slugify(property)
 
 # Function to request overwriting file
 def overwrite(serializer):

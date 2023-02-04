@@ -142,7 +142,38 @@ AUTH_USER_MODEL = 'user_app.User'
 
 # For development purposes
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_files')
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'general.log'),
+            'level': 'DEBUG',
+            'formatter': 'standard',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'standard',
+        }
+    },
+    'loggers': {
+        'myrestaurant_app': {
+            'level': 'DEBUG',
+            'handlers': ['file', 'console'],
+        },
+    },
+    'formatters': {
+        'standard': {
+            'format': '[{name}] [{levelname}]: {message}',
+            'style': '{',
+        },
+    },
+}
