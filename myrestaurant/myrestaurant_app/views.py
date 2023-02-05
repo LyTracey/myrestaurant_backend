@@ -8,6 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 import os
 import logging
 from .utils import overwrite
+from .permissions import ReadOnly, Staff
 
 logger = logging.getLogger(__name__)
 
