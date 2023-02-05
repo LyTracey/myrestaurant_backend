@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import Group
 
 class UserCreationForm(forms.ModelForm):
     # Form to use to create MyUser instance with django-admin
@@ -69,3 +70,4 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 admin.site.register(MyUser, UserAdmin)
+admin.site.unregister(Group)
