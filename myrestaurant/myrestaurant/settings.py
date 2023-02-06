@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from configparser import ConfigParser
+import os
 
 # Set up config parser
 config = ConfigParser()
@@ -42,12 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'django_extensions',
     'myrestaurant_app',
-    'rest_framework',
     'user_app',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -136,4 +142,59 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'user_app.User'
+AUTH_USER_MODEL = 'user_app.MyUser'
+
+
+# For development purposes
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_files')
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'general.log'),
+            'level': 'DEBUG',
+            'formatter': 'standard',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'standard',
+        }
+    },
+    'loggers': {
+        'myrestaurant_app': {
+            'level': 'DEBUG',
+            'handlers': ['file', 'console'],
+        },
+    },
+    'formatters': {
+        'standard': {
+            'format': '[{name}] [{levelname}]: {message}',
+            'style': '{',
+        },
+    },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+}
+
+CORS_ALLOWED_ORIGINS = [
+]
+
+LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
