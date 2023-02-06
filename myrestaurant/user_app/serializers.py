@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from . import models
+from .models import MyUser
 
-class CustomerSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Customer
-        fields = ["customer_id", "email", "phone", "dob"]
+        model = MyUser
+        fields = ['email', 'password']
+

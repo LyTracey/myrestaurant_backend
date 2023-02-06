@@ -1,10 +1,10 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 import logging
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
-logger.info(User)
 
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
@@ -12,8 +12,6 @@ class ReadOnly(BasePermission):
 
 class Staff(BasePermission):
     def has_permission(self, request, view):
-        if request.user:
-            u = User.objects.get(id=request.user.pk)
-            if u.is_staff:
-                return True
+        if request.user and not isinstance(request.user, AnonymousUser):
+            return request.user.is_staff
         return False

@@ -5,11 +5,10 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import OrderSerializer, MenuSerializer, InventorySerializer
 from rest_framework.parsers import MultiPartParser, FormParser
-import os
 import logging
 from .utils import overwrite
 from .permissions import ReadOnly, Staff
-from django.contrib.auth import authenticate, login
+from rest_framework.authentication import TokenAuthentication
 
 logger = logging.getLogger(__name__)
 
