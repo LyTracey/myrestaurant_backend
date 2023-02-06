@@ -2,7 +2,8 @@ from django.db import models
 from .utils import auto_slug
 
 class Inventory(models.Model):
-    ingredient = models.CharField(max_length=30, primary_key=True, blank=False)
+    id = models.BigAutoField(primary_key=True, default=None)
+    ingredient = models.CharField(max_length=30, blank=False)
     slug = models.SlugField(unique=True, max_length=30, blank=True, null=True)
     quantity = models.IntegerField()
     unit_price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -20,7 +21,8 @@ class Inventory(models.Model):
         return self.ingredient
 
 class Menu(models.Model):
-    title = models.CharField(primary_key=True, max_length=50)
+    id = models.BigAutoField(primary_key=True, default=None)
+    title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True, max_length=30, blank=True)
     image = models.ImageField(upload_to='menu', blank=True, null=True)
     description = models.TextField()
@@ -37,7 +39,7 @@ class Menu(models.Model):
         return self.title
     
 class Order(models.Model):
-    order_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True, default=None)
     order_items = models.CharField(max_length=300)
     notes = models.CharField(max_length=300, blank=True, null=True)
     ordered_at = models.DateTimeField(auto_now_add=True)
@@ -53,3 +55,12 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.order_id)
+
+class Dashboard(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    order_statistics = models.JSONField()
+    inventory_statistics = models.JSONField()
+    menu_statistics = models.JSONField()
+
+    class Meta:
+        db_table = "dashboard"
