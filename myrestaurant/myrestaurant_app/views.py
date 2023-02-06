@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.conf import settings
-from .models import Inventory, Order, Menu
+from .models import Inventory, Order, Menu, Dashboard
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .serializers import OrderSerializer, MenuSerializer, InventorySerializer
+from .serializers import OrderSerializer, MenuSerializer, InventorySerializer, DashboardSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 import logging
 from .utils import overwrite
@@ -12,12 +12,12 @@ from rest_framework.authentication import TokenAuthentication
 
 logger = logging.getLogger(__name__)
 
-# viewsets.ModelViewSet automatically provides `list`, `create`, `retrieve`, `update` and `destroy` actions.
 
 class OrderViewSet(viewsets.ModelViewSet): 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [Staff|ReadOnly]
+
 
 class MenuViewSet(viewsets.ModelViewSet): 
     queryset = Menu.objects.all()
@@ -43,8 +43,15 @@ class MenuViewSet(viewsets.ModelViewSet):
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class InventoryViewSet(viewsets.ModelViewSet):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
     permission_classes = [Staff|ReadOnly]
 
+
+class DashboardViewSet(viewsets.ModelViewSet):
+    # Calls functions from utils.py to calculate statistics
+    queryset = Dashboard.objects.all()
+    serializer_class = DashboardSerializer
+    permission_classes = [Staff|ReadOnly]

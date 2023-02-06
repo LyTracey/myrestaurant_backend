@@ -58,9 +58,9 @@ class Order(models.Model):
 
 class Dashboard(models.Model):
     id = models.BigAutoField(primary_key=True)
-    order_statistics = models.JSONField()
-    inventory_statistics = models.JSONField()
-    menu_statistics = models.JSONField()
+    order_statistics = models.JSONField(default=dict, null=True)
+    inventory_statistics = models.JSONField(default=dict, null=True)
+    menu_statistics = models.JSONField(default=dict, null=True)
 
     class Meta:
         db_table = "dashboard"

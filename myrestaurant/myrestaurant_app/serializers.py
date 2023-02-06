@@ -16,3 +16,8 @@ class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Inventory
         fields = ["ingredient", "slug", "quantity", "unit_price", "image"]
+
+class DashboardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Dashboard
+        fields = ["order_statistics", "menu_statistics", "inventory_statistics"]
