@@ -174,6 +174,10 @@ LOGGING = {
             'level': 'DEBUG',
             'handlers': ['file', 'console'],
         },
+        'user_app': {
+            'level': 'DEBUG',
+            'handlers': ['file', 'console'],
+        },
     },
     'formatters': {
         'standard': {
