@@ -26,9 +26,3 @@ def user_handler(sender, instance, **kwargs):
 class MyUserViewset(ModelViewSet):
     queryset = MyUser.objects.all()
     serializer_class = MyUserSerializer
-
-    def list(self, request):
-        logger.debug("Testing logger 2")
-        queryset = self.get_queryset()
-        serializer = MyUserSerializer(queryset, many=True)
-        return Response(serializer.data)

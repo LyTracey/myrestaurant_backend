@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from django.conf import settings
 from .models import Inventory, Order, Menu, Dashboard
 from rest_framework import viewsets, status
 from rest_framework.response import Response

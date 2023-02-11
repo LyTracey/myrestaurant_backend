@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.utils.text import slugify
 from django.db import connection
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ def item_sales(key, model, item):
     # Count the quantity sold for each menu item
     pass
 
-def get_profit(key, start_date, end_date):
+def get_profit(start_date, end_date):
     # Get orders in timeframe - need to convert to datetime?
     # Get menu items orders in each order and price of each menu_item
     # Get ingredients for each menu item ordered, units needed, and unit_price
@@ -76,4 +77,10 @@ def get_profit(key, start_date, end_date):
 
 def summary_statistics():
     pass
+
+
+if __name__ == "__main__":
+    start = datetime.strptime("10-02-2023 11:20:01", "%d-%m-%y %H:%M:%S")
+    end = datetime.strptime("10-02-2023 11:20:01", "%d-%m-%y %H:%M:%S")
+    get_profit(start, end)
     
