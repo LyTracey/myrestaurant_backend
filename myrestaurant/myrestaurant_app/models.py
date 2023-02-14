@@ -28,7 +28,7 @@ class Menu(models.Model):
     slug = models.SlugField(unique=True, max_length=30, blank=True)
     image = models.ImageField(upload_to='menu', blank=True, null=True)
     description = models.TextField(blank=True)
-    ingredients = models.ManyToManyField(Inventory, through="MenuInventory", related_name="menu_items")
+    ingredients = models.ManyToManyField(Inventory, through="MenuInventory", related_name="ingredients")
     price = models.DecimalField(max_digits=5 , decimal_places=2, default=None, blank=True, null=True)
 
     class Meta:
@@ -38,15 +38,15 @@ class Menu(models.Model):
     def save(self, *args, **kwargs):
         auto_slug(self, self.title)
         super().save(*args, **kwargs)
-    
+            
     def __str__(self):
         return self.title
 
 
 class MenuInventory(models.Model):
-    menu_id = models.ForeignKey(Menu, on_delete=models.CASCADE)
-    inventory_id = models.ForeignKey(Inventory, on_delete=models.CASCADE)
-    units = models.PositiveSmallIntegerField()
+    menu_id = models.ForeignKey(Menu, on_delete=models.CASCADE, db_column="menu_id", related_name="menu")
+    inventory_id = models.ForeignKey(Inventory, on_delete=models.CASCADE, db_column="inventory_id", related_name="inventory")
+    units = models.PositiveSmallIntegerField(default=None, null=True)
 
     class Meta:
         db_table = "menu_inventory"

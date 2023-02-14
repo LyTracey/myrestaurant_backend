@@ -69,7 +69,7 @@ def get_profit(start_date, end_date):
     # Get ingredients for each menu item ordered, units needed, and unit_price
     # Work out the difference
 
-    sql = "SELECT * FROM orders WHERE complete >= %s AND complete <= %s"
+    sql = "SELECT * FROM orders WHERE delivered_at >= %s AND delivered_at <= %s"
     cursor.execute(sql, [start_date, end_date])
     orders = cursor.fetchall()
     ordered_items = {}
@@ -80,7 +80,7 @@ def summary_statistics():
 
 
 if __name__ == "__main__":
-    start = datetime.strptime("10-02-2023 11:20:01", "%d-%m-%y %H:%M:%S")
-    end = datetime.strptime("10-02-2023 11:20:01", "%d-%m-%y %H:%M:%S")
+    start = datetime.strptime("10-02-2023 23:59:59", "%d-%m-%y %H:%M:%S")
+    end = datetime.strptime("10-02-2023 23:59:59", "%d-%m-%y %H:%M:%S")
     get_profit(start, end)
     
