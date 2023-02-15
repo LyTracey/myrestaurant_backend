@@ -11,7 +11,7 @@
     <div>
       <div class="input-group col-sm-2">
         {% for key in field.initial %}
-            <input class="hidden" name="ingredient_name" value="{{ key }}">
+            <input class="hidden" name="{{ field.name }}_keys" value="{{ key }}">
             <input type="number" name="{{ field.name }}" value="0">
         {% endfor %}
       </div>
