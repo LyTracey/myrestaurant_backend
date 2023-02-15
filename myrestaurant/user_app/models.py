@@ -71,7 +71,7 @@ class MyStaff(models.Model):
     ]
     id = models.BigAutoField(primary_key=True)
     staff = models.OneToOneField(MyUser, on_delete=models.CASCADE)
-    join_date = models.DateField(default=date.today())
+    join_date = models.DateField(auto_now_add=True)
     role = models.CharField(choices=roles, max_length=50, blank=True)
 
     class Meta:

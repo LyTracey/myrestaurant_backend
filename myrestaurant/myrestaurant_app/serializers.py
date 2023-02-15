@@ -40,21 +40,31 @@ class MenuSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         new_data = data.copy()
-        ingredients_data = new_data.pop('ingredient_name')
         units_data = new_data.pop('units')
-        new_data['units'] = json.dumps({item[0]: int(item[1]) for item in  zip(ingredients_data, units_data) })
-        return super().to_internal_value(new_data)
+        ingredients_data = new_data.pop('ingredient_name')
+        if isinstance(units_data, list):
+            new_data['units'] = json.dumps({item[0]: int(item[1]) for item in  zip(ingredients_data, units_data) })
+            return super().to_internal_value(new_data)
+        return super().to_internal_value(data)
 
     def create(self, validated_data, **kwargs):
         units = validated_data.pop('units')
         ingredients = validated_data.pop('ingredients')
-        menu_item = models.Menu.objects.create(**validated_data)
+        
+        # Calculate ingredients_cost
+        ingredients_cost = sum([item.unit_price*units[str(item)] for item in ingredients])
+        logger.info(ingredients_cost)
+
+        # Create menu model instance
+        menu_item = models.Menu.objects.create(**validated_data, ingredients_cost=ingredients_cost)
+
+        # Create menu_inventory data
         for inventory_item in ingredients:
             models.MenuInventory.objects.create(
                 menu_id=menu_item,
                 inventory_id=inventory_item,
                 units=units[str(inventory_item)]
-            )        
+            ) 
         return menu_item
 
 

@@ -29,6 +29,7 @@ class Menu(models.Model):
     image = models.ImageField(upload_to='menu', blank=True, null=True)
     description = models.TextField(blank=True)
     ingredients = models.ManyToManyField(Inventory, through="MenuInventory", related_name="ingredients")
+    ingredients_cost = models.DecimalField(max_digits=5, default=None, blank=True, decimal_places=2)
     price = models.DecimalField(max_digits=5 , decimal_places=2, default=None, blank=True, null=True)
 
     class Meta:
@@ -37,6 +38,7 @@ class Menu(models.Model):
 
     def save(self, *args, **kwargs):
         auto_slug(self, self.title)
+
         super().save(*args, **kwargs)
             
     def __str__(self):
