@@ -107,6 +107,8 @@ class OrderSerializer(serializers.ModelSerializer):
                 menu_id=item,
                 quantity=quantity[str(item)]
             )
+
+        # Update inventory
        
         return order
 
