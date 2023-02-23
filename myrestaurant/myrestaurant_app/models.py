@@ -1,5 +1,5 @@
 from django.db import models
-from .utils import auto_slug
+from .scripts.myrestaurant_utils import auto_slug
 
 
 class Inventory(models.Model):

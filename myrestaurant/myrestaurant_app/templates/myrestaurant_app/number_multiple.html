@@ -10,10 +10,11 @@
   <div class="col-sm-10">
     <div>
       <div class="input-group col-sm-2">
-        {% for key in field.initial %}
-            <input class="hidden" name="{{ field.name }}_keys" value="{{ key }}">
-            <input type="number" name="{{ field.name }}" value="0">
-        {% endfor %}
+          {% for key in style.queryset %}
+              <input type="object" class="hidden" name="keys" value="{{ key.id }}">
+              {{ key }}
+              <input type="number" name="{{ field.name }}" value="0">
+          {% endfor %}
       </div>
     </div>
 

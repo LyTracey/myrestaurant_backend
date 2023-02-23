@@ -3,9 +3,6 @@ import os
 from django.conf import settings
 from django.utils.text import slugify
 import json
-from . import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 logger = logging.getLogger(__name__)
@@ -31,19 +28,7 @@ def list_to_JSON(keys, values):
         json_string = json.dumps({item[0]: int(item[1]) for item in  zip(keys, values) })
         return json_string
     return values
-
-
-# Update inventory when order is placed
-@receiver(post_save, sender=models.Order)
-def update_units_available(send, instance):
-    # When order placed
-    # Get units available
-    # Get menu_items and quantity of each ingredient needed
-    # Minus quantity of units needed from units available for each ingredient
-
-    # Get inventory items for order
-
-    items = instance.orders_menu
     
 
+def run():
     pass
