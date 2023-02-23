@@ -83,7 +83,7 @@ def get_out_of_stock():
 
 
 
-def item_sales(start_date, end_date):
+def get_item_sales(start_date, end_date):
     # Get orders in timeframe
     # Get menu items in each order
     # Count the quantity sold for each menu item
