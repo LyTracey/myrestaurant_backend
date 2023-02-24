@@ -209,3 +209,4 @@ LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
 
 DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 DATE_FORMAT = "%d-%m-Y"
+
