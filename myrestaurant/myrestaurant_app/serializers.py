@@ -140,7 +140,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 
-class DashboardSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Dashboard
-        fields = ["order_statistics", "menu_statistics", "inventory_statistics"]
+class DashboardSerializer(serializers.Serializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+

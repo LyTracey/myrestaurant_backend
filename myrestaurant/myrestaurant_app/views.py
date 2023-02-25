@@ -1,12 +1,14 @@
-from .models import Inventory, Order, Menu, Dashboard
+from .models import Inventory, Order, Menu
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import OrderSerializer, MenuSerializer, InventorySerializer, DashboardSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
-import logging
 from .permissions import ReadOnly, Staff
-from django.dispatch import receiver
-from django.db.models.signals import m2m_changed
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
+from myrestaurant_app.scripts.dashboard_utils import summary_statistics
+from rest_framework import status
+import logging
+from operator import itemgetter
 # from .scripts.utils import overwrite
 # from rest_framework.authentication import TokenAuthentication
 
@@ -51,24 +53,18 @@ class InventoryViewSet(viewsets.ModelViewSet):
     permission_classes = [Staff|ReadOnly]
 
 
-class DashboardViewSet(viewsets.ModelViewSet):
-    # Calls functions from utils.py to calculate statistics
-    queryset = Dashboard.objects.all()
+class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     serializer_class = DashboardSerializer
-    permission_classes = [Staff|ReadOnly]
 
+    def retrieve(self, request, *args, **kwargs):
+        data = summary_statistics()
+        return Response(data=data, status=status.HTTP_200_OK)
+    
+    def update(self, request, *args, **kwargs):
+        serializer = DashboardSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        start_date, end_date = itemgetter('start_date', 'end_date')(serializer.data)
 
-# # Update inventory when order is placed
-# @receiver(m2m_changed, sender=Order.menu_items.through, weak=False)
-# def update_units_available(sender, instance, *args, **kwargs):
-#     # When order placed
-#     # Get units available
-#     # Get menu_ and quantity of each ingredient needed
-#     # Minus quantity of units needed from units available for each ingredient
-#     # Get menu  for order
+        data = summary_statistics(start_date, end_date)
+        return Response(data=data, status=status.HTTP_200_OK)
 
-#     logger.info("signal received")
-#     # if action == "pre_add":
-#     #     logger.info(instance.menu_items.all())
-#     #     logger.info(instance)
-#     # logger.info(obj.menu_items.all())

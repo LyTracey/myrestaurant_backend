@@ -6,10 +6,10 @@ router = routers.DefaultRouter()
 router.register(r"orders",  views.OrderViewSet, basename="order")
 router.register(r"menu", views.MenuViewSet, basename="menu")
 router.register(r"inventory", views.InventoryViewSet, basename="inventory")
-router.register(r"dashboard", views.DashboardViewSet, basename="dashboard ")
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
 ]
 
 for url in router.urls:
