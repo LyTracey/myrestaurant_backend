@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
+from datetime import date
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -42,6 +43,7 @@ class MyUserManager(BaseUserManager):
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
     # Custom user model
+    id = models.BigAutoField(primary_key=True)
     email = models.EmailField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -55,3 +57,22 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    class Meta:
+        db_table = "myuser"
+
+
+class MyStaff(models.Model):
+    roles = [
+        ("SALES", "Sales"),
+        ("MANAGER", "Manager"),
+        ("CHEF", "Chef"),
+        ("OTHER", "Other")
+    ]
+    id = models.BigAutoField(primary_key=True)
+    staff = models.OneToOneField(MyUser, on_delete=models.CASCADE)
+    join_date = models.DateField(auto_now_add=True)
+    role = models.CharField(choices=roles, max_length=50, blank=True)
+
+    class Meta:
+        db_table = "mystaff"

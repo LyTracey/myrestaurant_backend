@@ -1,0 +1,4 @@
+# requirements.txt
+-e .
+django>=1.11
+pytest-django

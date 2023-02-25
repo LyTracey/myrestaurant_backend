@@ -2,11 +2,13 @@ import logging
 import os
 from django.conf import settings
 from django.utils.text import slugify
+import json
 
-logger = logging.getLogger("general")
+
+logger = logging.getLogger(__name__)
 
 # Slugify
-def auto_slug(self, property):
+def auto_slug(self, property: str):
     if not self.slug:
         self.slug = slugify(property)
 
@@ -18,3 +20,15 @@ def overwrite(serializer):
         original_image_url = os.path.join(settings.MEDIA_ROOT, "menu", file)
         os.remove(original_image_url)
         logger.info("Original file removed.")
+
+
+# Function to convert list input into JSON string
+def list_to_JSON(keys, values):
+    if isinstance(values, list):
+        json_string = json.dumps({item[0]: int(item[1]) for item in  zip(keys, values) })
+        return json_string
+    return values
+    
+
+def run():
+    pass

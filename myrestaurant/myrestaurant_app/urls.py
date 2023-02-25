@@ -8,7 +8,8 @@ router.register(r"menu", views.MenuViewSet, basename="menu")
 router.register(r"inventory", views.InventoryViewSet, basename="inventory")
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
 ]
 
 for url in router.urls:

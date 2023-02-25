@@ -1,0 +1,54 @@
+[
+    {
+        "model": "myrestaurant_app.inventory", 
+        "pk": 1, 
+        "fields": {
+            "ingredient": "Garlic",
+            "slug": "garlic",
+            "quantity": 14,
+            "unit_price": "0.20",
+            "image": ""}
+    }, 
+    {
+        "model": "myrestaurant_app.inventory",
+        "pk": 2,
+        "fields": {
+            "ingredient": "Pork Mince",
+            "slug": "pork-mince",
+            "quantity": 4,
+            "unit_price": "2.50",
+            "image": ""}
+    }, 
+    {
+        "model": "myrestaurant_app.inventory",
+        "pk": 3,
+        "fields": {
+            "ingredient": "Beef Mince",
+            "slug": "beef-mince",
+            "quantity": 10,
+            "unit_price": "3.50",
+            "image": ""
+        }
+    },
+    {
+        "model": "myrestaurant_app.inventory",
+        "pk": 4,
+        "fields": {
+            "ingredient": "Chives",
+            "slug": "chives",
+            "quantity": -2,
+            "unit_price": "1.50", "image": ""
+        }
+    },
+    {
+        "model": "myrestaurant_app.inventory",
+        "pk": 5,
+        "fields": {
+            "ingredient": "Plain Flour",
+            "slug": "plain-flour",
+            "quantity": 5,
+            "unit_price": "0.75",
+            "image": ""
+        }
+    }
+]

@@ -1,0 +1,31 @@
+{% load rest_framework %}
+
+<div class="form-group">
+  {% if field.label %}
+    <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">
+      {{ field.label }}
+    </label>
+  {% endif %}
+
+  <div class="col-sm-10">
+    <div>
+      <div class="input-group col-sm-2">
+          {% for key in style.queryset %}
+              <input type="object" class="hidden" name="keys" value="{{ key.id }}">
+              {{ key }}
+              <input type="number" name="{{ field.name }}" value="0">
+          {% endfor %}
+      </div>
+    </div>
+
+    {% if field.errors %}
+      {% for error in field.errors %}
+        <span class="help-block">{{ error }}</span>
+      {% endfor %}
+    {% endif %}
+
+    {% if field.help_text %}
+      <span class="help-block">{{ field.help_text|safe }}</span>
+    {% endif %}
+  </div>
+</div>
