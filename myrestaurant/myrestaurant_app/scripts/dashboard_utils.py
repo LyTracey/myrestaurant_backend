@@ -64,10 +64,12 @@ def get_item_sales(start_date=None, end_date=None):
     # Get menu items in each order
     # Count the quantity sold for each menu item
     sql = """
-        SELECT orders_menu.menu_id, SUM(orders_menu.quantity)
+        SELECT menu.title, SUM(orders_menu.quantity)
         FROM orders_menu
         JOIN orders
             ON orders_menu.order_id = orders.id
+        JOIN menu
+            ON orders_menu.menu_id = menu.id
         WHERE orders.ordered_at BETWEEN %s and %s
         GROUP BY orders_menu.menu_id;
     """
