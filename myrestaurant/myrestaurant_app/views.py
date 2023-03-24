@@ -55,6 +55,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
 
 class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     serializer_class = DashboardSerializer
+    permission_classes = [Staff|ReadOnly]
 
     def retrieve(self, request, *args, **kwargs):
         data = summary_statistics()
