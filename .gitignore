@@ -83,7 +83,6 @@ ipython_config.py
 
 # pyenv
 .python-version
-.venv
 *.ini
 
 # pipenv
@@ -132,3 +131,6 @@ dmypy.json
 
 # Developer notes
 *.md
+
+# Mac specific
+.DS_Store
