@@ -38,7 +38,11 @@ def get_revenue(start_date=None, end_date=None):
 
     cursor.execute(sql, [start_date, end_date])
 
-    return cursor.fetchone()[0]
+    result = cursor.fetchone()[0]
+    if result:
+        return result
+    
+    return 0
 
 
 def get_profit(start_date=None, end_date=None):
