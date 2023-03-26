@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 cursor = connection.cursor()
 
-pd.options.display.float_format = '{:,.2f}'.format
-
 def get_max_dates():
 
     sql = """
@@ -41,7 +39,7 @@ def get_revenue(start_date=None, end_date=None, frequency="1W"):
     grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency)).sum().reset_index()
     grouped_df["date"] = grouped_df["date"].astype("str")
 
-    return grouped_df.to_dict(orient="records")
+    return grouped_df.round(2).to_dict(orient="records")
 
 
 def get_profit(start_date=None, end_date=None, frequency="1W"):
@@ -60,9 +58,10 @@ def get_profit(start_date=None, end_date=None, frequency="1W"):
     df = pd.read_sql(sql, con=connection, params=[start_date, end_date], parse_dates=["date"])
 
     grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency)).sum().reset_index()
-    grouped_df["date"] = grouped_df["date"].astype("str")
+    grouped_df["date"] = grouped_df["date"].astype(str)
+    
 
-    return grouped_df.to_dict(orient="records")
+    return grouped_df.round(2).to_dict(orient="records")
 
 
 def get_item_sales(start_date=None, end_date=None):
