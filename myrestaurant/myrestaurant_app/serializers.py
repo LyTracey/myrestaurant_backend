@@ -143,4 +143,5 @@ class OrderSerializer(serializers.ModelSerializer):
 class DashboardSerializer(serializers.Serializer):
     start_date = serializers.DateField()
     end_date = serializers.DateField()
+    frequency = serializers.CharField(max_length=3)
 
