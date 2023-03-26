@@ -16,7 +16,7 @@ import os
 
 # Set up config parser
 config = ConfigParser()
-config.read('.ini')
+config.read('../.ini')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

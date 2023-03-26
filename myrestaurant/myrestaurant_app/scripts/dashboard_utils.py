@@ -1,12 +1,13 @@
 from datetime import datetime
 from django.db import connection
 import logging
-from myrestaurant_app.models import Inventory
-
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
 cursor = connection.cursor()
+
+pd.options.display.float_format = '{:,.2f}'.format
 
 def get_max_dates():
 
@@ -21,9 +22,9 @@ def get_max_dates():
     return [start, datetime.now()]
 
 
-def get_revenue(start_date=None, end_date=None):
+def get_revenue(start_date=None, end_date=None, frequency="1W"):
     sql = """
-        SELECT SUM(menu.price * orders_menu.quantity)
+        SELECT orders.ordered_at AS date, menu.price * orders_menu.quantity AS revenue
         FROM orders_menu
         LEFT JOIN orders
             ON orders_menu.order_id = orders.id
@@ -35,15 +36,17 @@ def get_revenue(start_date=None, end_date=None):
     if not all([start_date, end_date]):
         start_date, end_date = get_max_dates()
 
+    df = pd.read_sql(sql, con=connection, params=[start_date, end_date], parse_dates=["date"])
 
-    cursor.execute(sql, [start_date, end_date])
+    grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency)).sum().reset_index()
+    grouped_df["date"] = grouped_df["date"].astype("str")
 
-    return cursor.fetchone()[0]
+    return grouped_df.to_dict(orient="records")
 
 
-def get_profit(start_date=None, end_date=None):
+def get_profit(start_date=None, end_date=None, frequency="1W"):
     sql = """
-        SELECT menu.price, orders_menu.quantity, menu.ingredients_cost
+        SELECT orders.ordered_at AS date, ((menu.price - menu.ingredients_cost) * orders_menu.quantity) AS profit
         FROM orders_menu
         LEFT JOIN orders
             ON orders_menu.order_id = orders.id
@@ -54,9 +57,12 @@ def get_profit(start_date=None, end_date=None):
     if not all([start_date, end_date]):
         start_date, end_date = get_max_dates()
 
-    cursor.execute(sql, [start_date, end_date])
+    df = pd.read_sql(sql, con=connection, params=[start_date, end_date], parse_dates=["date"])
 
-    return sum((price - cost) * quantity for price, quantity, cost in cursor.fetchall())
+    grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency)).sum().reset_index()
+    grouped_df["date"] = grouped_df["date"].astype("str")
+
+    return grouped_df.to_dict(orient="records")
 
 
 def get_item_sales(start_date=None, end_date=None):
@@ -125,11 +131,11 @@ def get_out_of_stock():
     return out_of_stock
 
 
-def summary_statistics(start_date=None, end_date=None):
+def summary_statistics(start_date=None, end_date=None, frequency=None):
         low_stock = get_low_stock()
         out_of_stock = get_out_of_stock()
-        revenue = get_revenue(start_date, end_date)
-        profit = get_profit(start_date, end_date)
+        revenue = get_revenue(start_date, end_date, frequency)
+        profit = get_profit(start_date, end_date, frequency)
         sales = get_item_sales(start_date, end_date)
         return {
             "revenue": revenue,
@@ -141,7 +147,9 @@ def summary_statistics(start_date=None, end_date=None):
 
 
 
-# def run():
-#     start = datetime.strptime("09-02-2023 23:59:59", "%d-%m-%Y %H:%M:%S")
-#     end = datetime.strptime("16-02-2023 23:59:59", "%d-%m-%Y %H:%M:%S")
-#     get_revenue(start, end)
+def run():
+    result = get_profit()
+    print(result)
+    # start = datetime.strptime("09-02-2023 23:59:59", "%d-%m-%Y %H:%M:%S")
+    # end = datetime.strptime("16-02-2023 23:59:59", "%d-%m-%Y %H:%M:%S")
+    # get_revenue(start, end)

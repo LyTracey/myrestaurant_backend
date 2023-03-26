@@ -55,6 +55,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
 
 class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     serializer_class = DashboardSerializer
+    permission_classes = [Staff|ReadOnly]
 
     def retrieve(self, request, *args, **kwargs):
         data = summary_statistics()
@@ -63,8 +64,8 @@ class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     def update(self, request, *args, **kwargs):
         serializer = DashboardSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        start_date, end_date = itemgetter('start_date', 'end_date')(serializer.data)
+        start_date, end_date, frequency = itemgetter('start_date', 'end_date', 'frequency')(serializer.data)
 
-        data = summary_statistics(start_date, end_date)
+        data = summary_statistics(start_date, end_date, frequency)
         return Response(data=data, status=status.HTTP_200_OK)
 
