@@ -63,19 +63,23 @@ class MenuSerializer(serializers.ModelSerializer):
     def create(self, validated_data, **kwargs):
         ingredients = validated_data.pop('ingredients')
         units = validated_data.pop('units')
-        
+
         # Calculate ingredients_cost
-        ingredients_cost = sum([item.unit_price*units[str(item)] for item in ingredients])
+        ingredients_cost = []
+        for item in ingredients:
+            unit_price = models.Inventory.objects.get(id=item).unit_price
+            ingredients_cost += unit_price*units[str(item)]
+
 
         # Create menu model instance
-        menu_item = models.Menu.objects.create(**validated_data, ingredients_cost=ingredients_cost)
+        menu_item = models.Menu.objects.create(**validated_data, ingredients_cost=sum(ingredients_cost))
 
         # Create menu_inventory data instances
         for item in ingredients:
             obj = models.MenuInventory.objects.create(
                 menu_id=menu_item,
                 inventory_id=item,
-                units=units[str(item)]
+                units=units[item]
             )
 
         return menu_item

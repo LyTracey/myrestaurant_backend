@@ -11,13 +11,13 @@ class Inventory(models.Model):
     unit_price = models.DecimalField(max_digits=5, decimal_places=2, default=None, blank=True)
     image = models.ImageField(upload_to='inventory', blank=True)
     
-    def save(self, *args, **kwargs):
-        auto_slug(self, self.ingredient)
-        super().save(*args, **kwargs)
-        
     class Meta:
         db_table = "inventory"
     
+    def save(self, *args, **kwargs):
+        auto_slug(self, self.ingredient)
+        super().save(*args, **kwargs)
+         
     def __str__(self):
         return self.ingredient
 

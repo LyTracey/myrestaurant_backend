@@ -13,7 +13,7 @@
           {% for key in style.queryset %}
               <input type="object" class="hidden" name="keys" value="{{ key.id }}">
               {{ key }}
-              <input type="number" name="{{ field.name }}" value="0">
+              <input type="number" name="{{ field.name }}">
           {% endfor %}
       </div>
     </div>
