@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from . import models
 import logging
-import json
 from .scripts.myrestaurant_utils import list_to_JSON
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class MenuSerializer(serializers.ModelSerializer):
         initial={str(key): 0 for key in queryset},
         style={
             'template': 'myrestaurant_app/number_multiple.html',
-            'queryset': queryset
+            'queryset': queryset,
         }
     )
 
@@ -65,10 +65,8 @@ class MenuSerializer(serializers.ModelSerializer):
         units = validated_data.pop('units')
 
         # Calculate ingredients_cost
-        ingredients_cost = []
-        for item in ingredients:
-            unit_price = models.Inventory.objects.get(id=item).unit_price
-            ingredients_cost += unit_price*units[str(item)]
+        ingredients_cost = [item.unit_price * Decimal(units[str(item.id)]) for item in ingredients]
+        logger.debug(ingredients_cost)
 
 
         # Create menu model instance
@@ -79,7 +77,7 @@ class MenuSerializer(serializers.ModelSerializer):
             obj = models.MenuInventory.objects.create(
                 menu_id=menu_item,
                 inventory_id=item,
-                units=units[item]
+                units=units[str(item.id)]
             )
 
         return menu_item
