@@ -2,3 +2,7 @@
 -e .
 django>=1.11
 pytest-django
+django-cors-headers
+django-extensions
+mysqlclient
+Pillow

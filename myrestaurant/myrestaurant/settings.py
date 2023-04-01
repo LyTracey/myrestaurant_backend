@@ -203,6 +203,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
 ]
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
