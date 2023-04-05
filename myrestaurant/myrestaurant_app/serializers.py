@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from . import models
 import logging
-from .scripts.myrestaurant_utils import list_to_JSON
+from .scripts.myrestaurant_utils import list_to_JSON, create_update_menu
 from decimal import Decimal
 
 logger = logging.getLogger(__name__)
-
 
 class InventorySerializer(serializers.ModelSerializer):
 
@@ -61,27 +60,11 @@ class MenuSerializer(serializers.ModelSerializer):
         return super().to_internal_value(new_data)
 
     def create(self, validated_data, **kwargs):
-        ingredients = validated_data.pop('ingredients')
-        units = validated_data.pop('units')
+        return create_update_menu(validated_data, models.Menu, models.MenuInventory)
 
-        # Calculate ingredients_cost
-        ingredients_cost = [item.unit_price * Decimal(units[str(item.id)]) for item in ingredients]
-        logger.debug(ingredients_cost)
-
-
-        # Create menu model instance
-        menu_item = models.Menu.objects.create(**validated_data, ingredients_cost=sum(ingredients_cost))
-
-        # Create menu_inventory data instances
-        for item in ingredients:
-            obj = models.MenuInventory.objects.create(
-                menu_id=menu_item,
-                inventory_id=item,
-                units=units[str(item.id)]
-            )
-
-        return menu_item
-
+    def update(self, instance, validated_data):
+        return create_update_menu(validated_data, models.Menu, models.MenuInventory, instance.pk)
+    
 
 class OrderSerializer(serializers.ModelSerializer):
 

@@ -31,6 +31,7 @@ class MenuViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
+        logger.debug(instance)
         serializer = MenuSerializer(instance, request.data, partial=True)
         if serializer.is_valid():
             # overwrite(serializer)
