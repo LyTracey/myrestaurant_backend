@@ -60,8 +60,8 @@ class Order(models.Model):
 # Custom through models
 class MenuInventory(models.Model):
     id = models.BigAutoField(primary_key=True)
-    menu_id = models.ForeignKey(Menu, on_delete=models.CASCADE, db_column="menu_id", related_name="menu_inventory")
-    inventory_id = models.ForeignKey(Inventory, on_delete=models.CASCADE, db_column="inventory_id", related_name="menu_inventory")
+    menu_id = models.ForeignKey(Menu, on_delete=models.CASCADE, db_column="menu_id", related_name="units")
+    inventory_id = models.ForeignKey(Inventory, on_delete=models.CASCADE, db_column="inventory_id", related_name="menu_items")
     units = models.DecimalField(max_digits=5, decimal_places=2, default=None, null=True, validators=[MinValueValidator(0, message="unit is not a positive")])
 
     class Meta:

@@ -22,17 +22,12 @@ def overwrite(serializer):
         os.remove(original_image_url)
         logger.info("Original file removed.")
 
-
-# Function to convert list input into JSON string
-def list_to_JSON(keys, values):
-    if isinstance(values, list):
-        json_string = json.dumps({item[0]: int(item[1]) for item in  zip(keys, values) })
-        return json_string
-    return values
-
 # Function to process units field in  Menu Inventory many-to-many relationship
 def create_update_menu(validated_data, model, through_model, pk=None):
-    ingredients = validated_data.pop('ingredients')
+    try:
+        ingredients = validated_data.pop('ingredients')
+    except:
+        ingredients = []
     units = validated_data.pop('units')
 
     # Calculate ingredients_cost

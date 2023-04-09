@@ -1,4 +1,4 @@
-from .models import Inventory, Order, Menu
+from .models import Inventory, Order, Menu, MenuInventory
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import OrderSerializer, MenuSerializer, InventorySerializer, DashboardSerializer
@@ -9,6 +9,7 @@ from myrestaurant_app.scripts.dashboard_utils import summary_statistics
 from rest_framework import status
 import logging
 from operator import itemgetter
+import json
 # from .scripts.utils import overwrite
 # from rest_framework.authentication import TokenAuthentication
 
@@ -31,7 +32,6 @@ class MenuViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        logger.debug(instance)
         serializer = MenuSerializer(instance, request.data, partial=True)
         if serializer.is_valid():
             # overwrite(serializer)
