@@ -41,8 +41,8 @@ class MenuSerializer(serializers.ModelSerializer):
         queryset=models.Inventory.objects.all(), 
         many=True
     )
+    units = MenuInventorySerializer(many=True, required=False)
 
-    units = MenuInventorySerializer(many=True)
 
     class Meta:
         model = models.Menu
@@ -57,9 +57,11 @@ class MenuSerializer(serializers.ModelSerializer):
         return internal_representation
 
     def create(self, validated_data, **kwargs):
+        logger.debug(validated_data)
         return create_update_menu(validated_data, models.Menu, models.MenuInventory)
 
     def update(self, instance, validated_data, **kwargs):
+        logger.debug(validated_data)
         return create_update_menu(validated_data, models.Menu, models.MenuInventory, instance.pk)
 
     def to_representation(self, instance):
