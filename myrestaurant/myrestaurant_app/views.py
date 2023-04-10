@@ -1,4 +1,4 @@
-from .models import Inventory, Order, Menu
+from .models import Inventory, Order, Menu, MenuInventory
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import OrderSerializer, MenuSerializer, InventorySerializer, DashboardSerializer
@@ -9,6 +9,7 @@ from myrestaurant_app.scripts.dashboard_utils import summary_statistics
 from rest_framework import status
 import logging
 from operator import itemgetter
+import json
 # from .scripts.utils import overwrite
 # from rest_framework.authentication import TokenAuthentication
 
@@ -43,7 +44,7 @@ class MenuViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             # overwrite(serializer)
             serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
