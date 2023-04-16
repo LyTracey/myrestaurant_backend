@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import connection
 import logging
 import pandas as pd
+# from myrestaurant_app.models import Menu
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +131,23 @@ def get_out_of_stock():
     
     return out_of_stock
 
+def get_availability(instance):
+    # Get the available quantity of menu_items (in theory) with the available ingredients in stock
+    sql  = """
+        SELECT inventory.quantity, menu_inventory.units
+        FROM menu_inventory
+        LEFT JOIN inventory
+            ON menu_inventory.inventory_id = inventory.id
+        WHERE menu_inventory.menu_id = %s;
+    """
+
+    cursor.execute(sql, [instance.id])
+
+    available_quantity = min([(quantity // units) for quantity, units in cursor.fetchall()], default=0)
+
+    return available_quantity
+    
+
 
 def summary_statistics(start_date=None, end_date=None, frequency=None):
         low_stock = get_low_stock()
@@ -148,8 +166,7 @@ def summary_statistics(start_date=None, end_date=None, frequency=None):
 
 
 def run():
-    result = get_revenue()
-    print(result)
-    # start = datetime.strptime("09-02-2023 23:59:59", "%d-%m-%Y %H:%M:%S")
-    # end = datetime.strptime("16-02-2023 23:59:59", "%d-%m-%Y %H:%M:%S")
-    # get_revenue(start, end)
+    pass
+    # instance = Menu.objects.get(pk=20)
+    # result = get_availability(instance)
+    # print(result)

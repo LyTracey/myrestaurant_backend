@@ -2,8 +2,8 @@ import logging
 import os
 from django.conf import settings
 from django.utils.text import slugify
-import json
 from decimal import Decimal
+from .dashboard_utils import get_availability
 
 
 logger = logging.getLogger(__name__)
@@ -21,6 +21,16 @@ def overwrite(serializer):
         original_image_url = os.path.join(settings.MEDIA_ROOT, "menu", file)
         os.remove(original_image_url)
         logger.info("Original file removed.")
+
+
+# Check if quantity ordered is less than available quantity
+def ordered_lte_available(quantity, menu_model):
+    for item in quantity.keys():
+        menu_obj = menu_model.objects.get(pk=int(item))
+        if get_availability(menu_obj) < quantity[item]:
+            return False
+    return True
+        
 
 # Function to process units field in  Menu Inventory many-to-many relationship
 def create_update_menu(validated_data, model, through_model, pk=None):
@@ -49,7 +59,7 @@ def create_update_menu(validated_data, model, through_model, pk=None):
     
     return menu_item
 
-def create_update_order(validated_data, model, through_model, inventory_model, menu_model=None, pk=None):
+def create_update_order(validated_data, model, through_model, inventory_model, menu_model, pk=None):
     menu_items = validated_data.pop('menu_items')
     quantity = validated_data.pop('quantity')
 
@@ -86,8 +96,16 @@ def create_update_order(validated_data, model, through_model, inventory_model, m
         units_used = {k: v*quantity[str(item.pk)] for k, v in inventory_items}
         for id in units_used.keys():
             obj = inventory_model.objects.get(id=id)
-            obj.quantity = obj.quantity - units_used[id]
-            obj.save()
+            try:
+                obj.quantity = obj.quantity - units_used[id]
+                obj.save()
+            except:
+                return "Order could not be processed as items are out of stock"
+    
+    # Update available quantity
+    queryset = menu_model.objects.all()
+    for item in queryset:
+        item.save()
 
     return order
 

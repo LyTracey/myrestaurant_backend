@@ -6,6 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import ReadOnly, Staff
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from myrestaurant_app.scripts.dashboard_utils import summary_statistics
+from myrestaurant_app.scripts.myrestaurant_utils import ordered_lte_available
 from rest_framework import status
 import logging
 from operator import itemgetter
@@ -21,6 +22,19 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [Staff|ReadOnly]
+
+    def create(self, request, *args, **kwargs):
+        quantity = json.loads(request.data.get("quantity"))
+        if ordered_lte_available(quantity, Menu):
+            return super().create(request, *args, **kwargs)
+        return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def partial_update(self, request, *args, **kwargs):
+        quantity = json.loads(request.data.get("quantity"))
+        if ordered_lte_available(quantity, Menu):
+            return super().partial_update(request, *args, **kwargs)
+        return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class MenuViewSet(viewsets.ModelViewSet): 
     queryset = Menu.objects.all()

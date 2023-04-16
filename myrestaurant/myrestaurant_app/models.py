@@ -1,7 +1,10 @@
 from django.db import models
 from .scripts.myrestaurant_utils import auto_slug
 from django.core.validators import MinValueValidator
+from .scripts.dashboard_utils import get_out_of_stock, get_availability
+import logging
 
+logger = logging.getLogger(__name__)
 
 class Inventory(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -31,12 +34,18 @@ class Menu(models.Model):
     ingredients = models.ManyToManyField(Inventory, through="MenuInventory")
     ingredients_cost = models.DecimalField(max_digits=5, default=None, blank=True, decimal_places=2)
     price = models.DecimalField(max_digits=5 , decimal_places=2, default=None, blank=True, null=True)
+    in_stock = models.BooleanField()
+    available_quantity = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0, message="unit is not a positive")])
+
 
     class Meta:
         db_table = "menu"
 
     def save(self, *args, **kwargs):
         auto_slug(self, self.title)
+        out_of_stock = get_out_of_stock()
+        self.in_stock = self.title not in out_of_stock
+        self.available_quantity = get_availability(self)
         super().save(*args, **kwargs)
             
     def __str__(self):
@@ -56,6 +65,7 @@ class Order(models.Model):
 
     class Meta:
         db_table = "orders"
+        ordering = ["-ordered_at"]
 
 
 # Custom through models

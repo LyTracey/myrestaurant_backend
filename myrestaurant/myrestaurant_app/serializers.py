@@ -44,14 +44,12 @@ class MenuSerializer(serializers.ModelSerializer):
 
     units = MenuInventorySerializer(many=True, required=False)
 
-
     class Meta:
         model = Menu
-        fields = ["id", "title", "image", "description", "ingredients", "price", "units"]
+        fields = ["id", "title", "image", "description", "ingredients", "price", "units", "in_stock", "available_quantity"]
         lookup_field = "slug"
 
     def to_internal_value(self, data):
-        logger.debug(data)
         new_data = data.copy()
         units = json.loads(new_data.pop("units")[0])
         internal_representation = super().to_internal_value(new_data)
@@ -96,7 +94,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return internal_representation
 
     def create(self, validated_data, **kwargs):
-        return create_update_order(validated_data, Order, OrderMenu, Inventory)
+        return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu)
 
     def update(self, instance, validated_data):
         return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu, instance.pk)
