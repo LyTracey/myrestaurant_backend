@@ -22,7 +22,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [Staff|ReadOnly]
 
-
 class MenuViewSet(viewsets.ModelViewSet): 
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer

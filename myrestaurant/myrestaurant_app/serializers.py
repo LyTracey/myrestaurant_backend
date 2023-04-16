@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from . import models
+from .models import Inventory, Menu, Order, MenuInventory, OrderMenu
 import logging
-from .scripts.myrestaurant_utils import create_update_menu
+from .scripts.myrestaurant_utils import create_update_menu, create_update_order
 from decimal import Decimal
 import json
 from collections import OrderedDict
@@ -11,45 +11,47 @@ logger = logging.getLogger(__name__)
 class InventorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.Inventory
+        model = Inventory
         exclude = ["slug"]
 
 
 class MenuInventorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.MenuInventory
+        model = MenuInventory
         fields = ["units"]
 
 
 class OrderMenuSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.OrderMenu
+        model = OrderMenu
         fields = "__all__"
 
 
 class MenuInventorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.MenuInventory
-        fields = ["units", "inventory_id"]
+        model = MenuInventory
+        fields = ["units"]
 
 
 class MenuSerializer(serializers.ModelSerializer):
 
     ingredients = serializers.PrimaryKeyRelatedField(
-        queryset=models.Inventory.objects.all(), 
+        queryset=Inventory.objects.all(), 
         many=True
     )
+
     units = MenuInventorySerializer(many=True, required=False)
 
 
     class Meta:
-        model = models.Menu
+        model = Menu
         fields = ["id", "title", "image", "description", "ingredients", "price", "units"]
         lookup_field = "slug"
 
     def to_internal_value(self, data):
+        logger.debug(data)
         new_data = data.copy()
         units = json.loads(new_data.pop("units")[0])
         internal_representation = super().to_internal_value(new_data)
@@ -57,79 +59,53 @@ class MenuSerializer(serializers.ModelSerializer):
         return internal_representation
 
     def create(self, validated_data, **kwargs):
-        logger.debug(validated_data)
-        return create_update_menu(validated_data, models.Menu, models.MenuInventory)
+        return create_update_menu(validated_data, Menu, MenuInventory)
 
     def update(self, instance, validated_data, **kwargs):
-        logger.debug(validated_data)
-        return create_update_menu(validated_data, models.Menu, models.MenuInventory, instance.pk)
+        return create_update_menu(validated_data, Menu, MenuInventory, instance.pk)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        units = {}
-        for unit_dict in representation["units"]:
-            units[unit_dict["inventory_id"]] = unit_dict["units"]
+        units = {str(item.id): MenuInventory.objects.get(menu_id=instance.id, inventory_id=item.id).units for item in instance.ingredients.all()}
         representation["units"] = units
         return representation
+    
+class OrderMenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderMenu
+        fields = ["quantity"]
 
 class OrderSerializer(serializers.ModelSerializer):
 
-    queryset = models.Menu.objects.all().order_by("title")
-
     menu_items = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=queryset,
-        style={'base_template': 'checkbox_multiple.html'}
+        queryset=Menu.objects.all(),
+        many=True
     )
 
-    quantity = serializers.JSONField(
-        write_only=True,
-        initial={str(key): 0 for key in queryset},
-        style={
-            'template': 'myrestaurant_app/number_multiple.html',
-            'queryset': queryset
-        }
-    )
+    quantity = OrderMenuSerializer(many=True, required=False)
 
     class Meta:
-        model = models.Order
+        model = Order
         fields = "__all__"
     
-    # def to_internal_value(self, data):
-    #     new_data = data.copy()
-    #     if new_data.get('keys'):
-    #         menu_items = new_data.pop('keys')
-    #         quantities = new_data.pop('quantity')
-    #         new_data['quantity'] = list_to_JSON(menu_items, quantities)
-    #     return super().to_internal_value(new_data)
+    def to_internal_value(self, data):
+        new_data = data.copy()
+        quantity = json.loads(new_data.pop('quantity')[0])
+        internal_representation = super().to_internal_value(new_data)
+        internal_representation['quantity'] = quantity
+        return internal_representation
 
     def create(self, validated_data, **kwargs):
-        menu_items: list[obj] = validated_data.pop('menu_items')
-        quantity: dict[int] = validated_data.pop('quantity')
+        return create_update_order(validated_data, Order, OrderMenu, Inventory)
 
-        # Create Order model instance
-        order = models.Order.objects.create(**validated_data)
-
-        # Create order_menu data
-        for item in menu_items:
-            obj = models.OrderMenu.objects.create(
-                order_id=order,
-                menu_id=item,
-                quantity=quantity[str(item)]
-            )
-
-        # Update inventory
-        for item in menu_items:
-            inventory_items = item.menu_inventory.values_list("inventory_id", "units")
-            units_used = {k: v*quantity[str(item)] for k, v in inventory_items}
-            for id in [k[0] for k in inventory_items]:
-                obj = models.Inventory.objects.get(id=id)
-                obj.quantity = obj.quantity - units_used[obj.id]
-                obj.save()
-                
-        return order
-
-
+    def update(self, instance, validated_data):
+        return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu, instance.pk)
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        quantity = {str(item.id): OrderMenu.objects.get(order_id=instance.id, menu_id=item.id).quantity for item in instance.menu_items.all()}
+        representation["quantity"] = quantity
+        return representation
 
 class DashboardSerializer(serializers.Serializer):
     start_date = serializers.DateField()

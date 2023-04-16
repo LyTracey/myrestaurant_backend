@@ -37,11 +37,10 @@ def create_update_menu(validated_data, model, through_model, pk=None):
     menu_item, created = model.objects.update_or_create(pk=pk, defaults={**validated_data, "ingredients_cost": ingredients_cost})
 
     # Delete entries in menuInventory
-    menu_item.ingredients.clear()
+    through_model.objects.filter(menu_id=pk).delete()
 
     # Create menu_inventory data instances
     for item in ingredients:
-        menu_item
         obj = through_model.objects.create(
             menu_id=menu_item,
             inventory_id=item,
@@ -49,6 +48,48 @@ def create_update_menu(validated_data, model, through_model, pk=None):
         )
     
     return menu_item
+
+def create_update_order(validated_data, model, through_model, inventory_model, menu_model=None, pk=None):
+    menu_items = validated_data.pop('menu_items')
+    quantity = validated_data.pop('quantity')
+
+    # Calculate total_cost of order
+    total_cost = sum([item.price * Decimal(quantity[str(item.pk)]) for item in menu_items])
+
+    # Create order model instance
+    order, created = model.objects.update_or_create(pk=pk, defaults={**validated_data, "total_cost": total_cost})
+
+    # Add back inventory items before deleting
+    if not created:
+        previous_quantities = {k: v for k, v in order.ordermenu_set.values_list("menu_id", "quantity")}
+        previous_menu_items = menu_model.objects.filter(pk__in=previous_quantities.keys())
+        for item in previous_menu_items:
+            inventory_items = item.menuinventory_set.values_list("inventory_id", "units")
+            previous_units_used = {k: v*previous_quantities[item.id] for k, v in inventory_items}
+            for id in previous_units_used.keys():
+                obj = inventory_model.objects.get(id=id)
+                obj.quantity = obj.quantity + previous_units_used[id]
+                obj.save()
+
+    # Delete entries in OrderMenu
+    through_model.objects.filter(order_id=pk).delete()
+
+    # Create order_menu instances and update inventory
+    for item in menu_items:
+        obj = through_model.objects.create(
+            order_id=order,
+            menu_id=item,
+            quantity=quantity[str(item.pk)]
+        )
+
+        inventory_items = item.menuinventory_set.values_list("inventory_id", "units")
+        units_used = {k: v*quantity[str(item.pk)] for k, v in inventory_items}
+        for id in units_used.keys():
+            obj = inventory_model.objects.get(id=id)
+            obj.quantity = obj.quantity - units_used[id]
+            obj.save()
+
+    return order
 
 
 def run():
