@@ -11,6 +11,7 @@ from rest_framework import status
 import logging
 from operator import itemgetter
 import json
+from rest_framework import generics
 # from .scripts.utils import overwrite
 # from rest_framework.authentication import TokenAuthentication
 
@@ -30,11 +31,22 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
     
     def partial_update(self, request, *args, **kwargs):
-        quantity = json.loads(request.data.get("quantity"))
-        if ordered_lte_available(quantity, Menu):
-            return super().partial_update(request, *args, **kwargs)
-        return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
+        if request.data.get("quantity", False):
+            quantity = json.loads(request.data.get("quantity"))
+            if not ordered_lte_available(quantity, Menu):
+                return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
+        return super().partial_update(request, *args, **kwargs)
     
+    def list(self, request, *args, **kwargs):
+        queryset = Order.objects.filter(complete=False)
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ArchivedOrdersView(generics.ListAPIView):
+    queryset = Order.objects.filter(complete=True)
+    serializer_class = OrderSerializer
+    permission_classes = [ReadOnly]
+        
 
 class MenuViewSet(viewsets.ModelViewSet): 
     queryset = Menu.objects.all()

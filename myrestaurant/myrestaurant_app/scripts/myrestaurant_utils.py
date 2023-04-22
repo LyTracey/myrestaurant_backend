@@ -4,6 +4,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from decimal import Decimal
 from .dashboard_utils import get_availability
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -63,6 +64,7 @@ def create_update_order(validated_data, model, through_model, inventory_model, m
     menu_items = validated_data.pop('menu_items')
     quantity = validated_data.pop('quantity')
 
+
     # Calculate total_cost of order
     total_cost = sum([item.price * Decimal(quantity[str(item.pk)]) for item in menu_items])
 
@@ -109,6 +111,10 @@ def create_update_order(validated_data, model, through_model, inventory_model, m
 
     return order
 
+def format_date(date):
+    if date:
+        return datetime.strftime(date, "%Y-%m-%d %H:%M:%S")
+    return None
 
 def run():
     pass

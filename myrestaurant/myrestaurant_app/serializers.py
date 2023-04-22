@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from .models import Inventory, Menu, Order, MenuInventory, OrderMenu
 import logging
-from .scripts.myrestaurant_utils import create_update_menu, create_update_order
+from .scripts.myrestaurant_utils import create_update_menu, create_update_order, format_date
 from decimal import Decimal
 import json
-from collections import OrderedDict
+
 
 logger = logging.getLogger(__name__)
 
@@ -87,22 +87,26 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
     def to_internal_value(self, data):
-        new_data = data.copy()
-        quantity = json.loads(new_data.pop('quantity')[0])
-        internal_representation = super().to_internal_value(new_data)
-        internal_representation['quantity'] = quantity
+        internal_representation = data.copy()
+        if internal_representation.__contains__("quantity"):
+            quantity = json.loads(internal_representation.pop('quantity')[0])
+            internal_representation = super().to_internal_value(internal_representation)
+            internal_representation['quantity'] = quantity
         return internal_representation
 
     def create(self, validated_data, **kwargs):
         return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu)
 
     def update(self, instance, validated_data):
-        return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu, instance.pk)
+        if validated_data.get("quantity", False) and validated_data.get("menu_items", False):
+            return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu, instance.pk)
+        return super().update(instance, validated_data)
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        quantity = {str(item.id): OrderMenu.objects.get(order_id=instance.id, menu_id=item.id).quantity for item in instance.menu_items.all()}
-        representation["quantity"] = quantity
+        representation["quantity"] = {str(item.id): OrderMenu.objects.get(order_id=instance.id, menu_id=item.id).quantity for item in instance.menu_items.all()}
+        for field in ["ordered_at", "prepared_at", "delivered_at"]:
+            representation[field] = format_date(getattr(instance, field))
         return representation
 
 class DashboardSerializer(serializers.Serializer):
