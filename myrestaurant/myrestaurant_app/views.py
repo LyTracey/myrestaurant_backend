@@ -6,10 +6,12 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import ReadOnly, Staff
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from myrestaurant_app.scripts.dashboard_utils import summary_statistics
+from myrestaurant_app.scripts.myrestaurant_utils import ordered_lte_available
 from rest_framework import status
 import logging
 from operator import itemgetter
 import json
+from rest_framework import generics
 # from .scripts.utils import overwrite
 # from rest_framework.authentication import TokenAuthentication
 
@@ -22,6 +24,29 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [Staff|ReadOnly]
 
+    def create(self, request, *args, **kwargs):
+        quantity = json.loads(request.data.get("quantity"))
+        if ordered_lte_available(quantity, Menu):
+            return super().create(request, *args, **kwargs)
+        return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def partial_update(self, request, *args, **kwargs):
+        if request.data.get("quantity", False):
+            quantity = json.loads(request.data.get("quantity"))
+            if not ordered_lte_available(quantity, Menu):
+                return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
+        return super().partial_update(request, *args, **kwargs)
+    
+    def list(self, request, *args, **kwargs):
+        queryset = Order.objects.filter(complete=False)
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ArchivedOrdersView(generics.ListAPIView):
+    queryset = Order.objects.filter(complete=True)
+    serializer_class = OrderSerializer
+    permission_classes = [ReadOnly]
+        
 
 class MenuViewSet(viewsets.ModelViewSet): 
     queryset = Menu.objects.all()

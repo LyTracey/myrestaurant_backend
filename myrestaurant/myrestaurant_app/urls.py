@@ -10,6 +10,7 @@ router.register(r"inventory", views.InventoryViewSet, basename="inventory")
 urlpatterns = [
     path('', include(router.urls)),
     path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
+    path(r"orders/archive",  views.ArchivedOrdersView.as_view(), name="archived-orders")
 ]
 
 for url in router.urls:
