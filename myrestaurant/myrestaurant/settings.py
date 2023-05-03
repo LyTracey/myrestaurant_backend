@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 from configparser import ConfigParser
 import os
+from datetime import timedelta
 
 # Set up config parser
 config = ConfigParser()
@@ -211,4 +212,9 @@ LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
 
 DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 DATE_FORMAT = "%d-%m-Y"
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
 
