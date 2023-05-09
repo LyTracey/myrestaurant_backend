@@ -12,6 +12,6 @@ class ReadOnly(BasePermission):
 
 class Staff(BasePermission):
     def has_permission(self, request, view):
-        if request.user and not isinstance(request.user, AnonymousUser):
-            return request.user.is_staff
-        return False
+        if isinstance(request.user, AnonymousUser):
+            return False
+        return request.user.is_staff

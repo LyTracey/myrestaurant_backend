@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class OrderViewSet(viewsets.ModelViewSet): 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [Staff|ReadOnly]
+    permission_classes = [Staff]
 
     def create(self, request, *args, **kwargs):
         quantity = json.loads(request.data.get("quantity"))
@@ -76,12 +76,12 @@ class MenuViewSet(viewsets.ModelViewSet):
 class InventoryViewSet(viewsets.ModelViewSet):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
-    permission_classes = [Staff|ReadOnly]
+    permission_classes = [Staff]
 
 
 class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     serializer_class = DashboardSerializer
-    permission_classes = [Staff|ReadOnly]
+    permission_classes = [Staff]
 
     def retrieve(self, request, *args, **kwargs):
         data = summary_statistics()

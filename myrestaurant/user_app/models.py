@@ -3,14 +3,14 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 
 class MyUserManager(BaseUserManager):
     # Defines methods to create users and superusers for custom MyUser model.
-    def create_user(self, email, password=None, **kwargs):
+    def create_user(self, username, password=None, **kwargs):
         
-        # Require email field
-        if not email:
-            raise ValueError('Users must have an email address')
+        # Require username field
+        if not username:
+            raise ValueError('Users must have a username')
             
         user = self.model(
-            email=self.normalize_email(email),
+            username=username.lower(),
             **kwargs
         )
 
@@ -18,10 +18,10 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, email, password=None, **kwargs):
+    def create_superuser(self, username, password=None, **kwargs):
 
         user = self.create_user(
-            email,
+            username.lower(),
             password=password,
             **kwargs,
         )
@@ -34,19 +34,18 @@ class MyUserManager(BaseUserManager):
 class MyUser(AbstractBaseUser, PermissionsMixin):
     # Custom user model
     id = models.BigAutoField(primary_key=True)
-    email = models.EmailField(max_length=255, unique=True)
+    username = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
     objects = MyUserManager()
 
-    USERNAME_FIELD = 'email'
-    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.email
+        return self.username
 
     class Meta:
         db_table = "myuser"
@@ -60,7 +59,7 @@ class MyStaff(models.Model):
         ("OTHER", "Other")
     ]
     id = models.BigAutoField(primary_key=True)
-    staff = models.OneToOneField(MyUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
     join_date = models.DateField(auto_now_add=True)
     role = models.CharField(choices=roles, max_length=50, blank=True)
 
