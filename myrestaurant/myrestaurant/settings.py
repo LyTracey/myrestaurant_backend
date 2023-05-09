@@ -214,7 +214,7 @@ DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 DATE_FORMAT = "%d-%m-Y"
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 

@@ -32,7 +32,7 @@ class MyUserViewset(CreateAPIView, UpdateAPIView, GenericAPIView):
 
 class TokenView(TokenObtainPairView):
     def finalize_response(self, request, response, *args, **kwargs):
-        # Return the refresh token as a http-only cookie - token can be stored as localStorage
+        # Return the refresh token as a http-only cookie - token can be stored as sessionStorage
         if response.data.get('refresh'):
             lifetime = 3600 * 24
             response.set_cookie('refresh', response.data['refresh'], max_age=lifetime, httponly=True)
