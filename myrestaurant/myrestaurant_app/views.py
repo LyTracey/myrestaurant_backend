@@ -12,8 +12,6 @@ import logging
 from operator import itemgetter
 import json
 from rest_framework import generics
-# from .scripts.utils import overwrite
-# from rest_framework.authentication import TokenAuthentication
 
 
 logger = logging.getLogger(__name__)

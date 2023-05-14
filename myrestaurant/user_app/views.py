@@ -8,7 +8,6 @@ from django.dispatch import receiver
 import logging
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth.models import AnonymousUser
 
 logger = logging.getLogger(__name__)
 
@@ -37,16 +36,19 @@ class ProfileViewset(RetrieveAPIView):
 
 class TokenView(TokenObtainPairView):
     def finalize_response(self, request, response, *args, **kwargs):
-        if not isinstance(request.user, AnonymousUser):
+
+        new_response = super().finalize_response(request, response, *args, **kwargs)
+
+        if response.data.get('access'):
             # Return is_staff
             user = MyUser.objects.filter(username=request.data['username']).first()
-            response.data['isStaff'] = user.is_staff
+            new_response.data['isStaff'] = user.is_staff
 
         # Return the refresh token as a http-only cookie - token can be stored as sessionStorage
         if response.data.get('refresh'):
             lifetime = 3600 * 24
-            response.set_cookie('refresh', response.data['refresh'], max_age=lifetime, httponly=True)
-            del response.data['refresh']
+            new_response.set_cookie('refresh', response.data['refresh'], max_age=lifetime, httponly=True)
+            del new_response.data['refresh']
         
 
-        return super().finalize_response(request, response, *args, **kwargs)
+        return new_response
