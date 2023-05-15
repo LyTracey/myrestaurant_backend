@@ -12,17 +12,24 @@ import logging
 from operator import itemgetter
 import json
 from rest_framework import generics
-# from .scripts.utils import overwrite
-# from rest_framework.authentication import TokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 
 logger = logging.getLogger(__name__)
 
+# Override authentication method to prevent authentication for public pages
+class JWTAuthenticationSafe(JWTAuthentication):
+    def authenticate(self, request):
+        try:
+            return super().authenticate(request=request)
+        except InvalidToken:
+            return None
 
 class OrderViewSet(viewsets.ModelViewSet): 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [Staff|ReadOnly]
+    permission_classes = [Staff]
 
     def create(self, request, *args, **kwargs):
         quantity = json.loads(request.data.get("quantity"))
@@ -54,6 +61,7 @@ class MenuViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [Staff|ReadOnly]
+    authentication_classes = [JWTAuthenticationSafe]
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -77,11 +85,12 @@ class InventoryViewSet(viewsets.ModelViewSet):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
     permission_classes = [Staff|ReadOnly]
+    authentication_classes = [JWTAuthenticationSafe]
 
 
 class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     serializer_class = DashboardSerializer
-    permission_classes = [Staff|ReadOnly]
+    permission_classes = [Staff]
 
     def retrieve(self, request, *args, **kwargs):
         data = summary_statistics()

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class Inventory(models.Model):
     id = models.BigAutoField(primary_key=True)
-    ingredient = models.CharField(max_length=30)
+    ingredient = models.CharField(max_length=30, unique=True)
     slug = models.SlugField(unique=True, max_length=30, blank=True)
     quantity = models.PositiveSmallIntegerField(default=0)
     unit_price = models.DecimalField(max_digits=5, decimal_places=2, default=None, blank=True)

@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Inventory, Menu, Order, MenuInventory, OrderMenu
 import logging
 from .scripts.myrestaurant_utils import create_update_menu, create_update_order, format_date
-from decimal import Decimal
 import json
 
 
@@ -27,6 +26,7 @@ class OrderMenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderMenu
         fields = "__all__"
+
 
 
 class MenuInventorySerializer(serializers.ModelSerializer):
@@ -68,7 +68,7 @@ class MenuSerializer(serializers.ModelSerializer):
         representation["units"] = units
         return representation
     
-class OrderMenuSerializer(serializers.ModelSerializer):
+class QuantitySerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderMenu
         fields = ["quantity"]
@@ -80,7 +80,7 @@ class OrderSerializer(serializers.ModelSerializer):
         many=True
     )
 
-    quantity = OrderMenuSerializer(many=True, required=False)
+    quantity = QuantitySerializer(many=True, required=False)
 
     class Meta:
         model = Order
@@ -92,6 +92,8 @@ class OrderSerializer(serializers.ModelSerializer):
             quantity = json.loads(internal_representation.pop('quantity')[0])
             internal_representation = super().to_internal_value(internal_representation)
             internal_representation['quantity'] = quantity
+        else:
+            internal_representation = super().to_internal_value(internal_representation)
         return internal_representation
 
     def create(self, validated_data, **kwargs):

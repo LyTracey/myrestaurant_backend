@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 from configparser import ConfigParser
 import os
+from datetime import timedelta
 
 # Set up config parser
 config = ConfigParser()
@@ -48,7 +49,7 @@ INSTALLED_APPS = [
     'myrestaurant_app',
     'user_app',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -193,8 +194,7 @@ LOGGING = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -210,4 +210,9 @@ LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
 
 DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 DATE_FORMAT = "%d-%m-Y"
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
+}
 
