@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Inventory, Menu, Order, MenuInventory, OrderMenu
 import logging
 from .scripts.myrestaurant_utils import create_update_menu, create_update_order, format_date
-from decimal import Decimal
 import json
 
 
