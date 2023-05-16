@@ -1,3 +1,4 @@
+from typing import Iterable, Optional
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 
@@ -53,10 +54,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
 class MyStaff(models.Model):
     roles = [
-        ("SALES", "Sales"),
-        ("MANAGER", "Manager"),
-        ("CHEF", "Chef"),
-        ("OTHER", "Other")
+        ("SALES", "Sales"),             # orders, dashboard
+        ("MANAGER", "Manager"),         # all
+        ("CHEF", "Chef")                # inventory, menu
     ]
     id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
@@ -65,3 +65,8 @@ class MyStaff(models.Model):
 
     class Meta:
         db_table = "mystaff"
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+        

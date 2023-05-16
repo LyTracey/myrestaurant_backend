@@ -15,3 +15,21 @@ class Staff(BasePermission):
         if isinstance(request.user, AnonymousUser):
             return False
         return request.user.is_staff
+
+class Chef(BasePermission):
+    def has_permission(self, request, view):
+        if isinstance(request.user, AnonymousUser):
+            return False
+        return request.user.mystaff.role == "CHEF"
+    
+class Sales(BasePermission):
+    def has_permission(self, request, view):
+        if isinstance(request.user, AnonymousUser):
+            return False
+        return request.user.mystaff.role == "SALES"
+
+class Manager(BasePermission):
+    def has_permission(self, request, view):
+        if isinstance(request.user, AnonymousUser):
+            return False
+        return request.user.mystaff.role == "MANAGER"
