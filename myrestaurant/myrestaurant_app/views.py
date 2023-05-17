@@ -84,7 +84,7 @@ class MenuViewSet(viewsets.ModelViewSet):
 class InventoryViewSet(viewsets.ModelViewSet):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
-    permission_classes = [Manager | Chef]
+    permission_classes = [Manager | Chef | ReadOnly]
     authentication_classes = [JWTAuthenticationSafe]
 
 
