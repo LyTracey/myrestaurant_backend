@@ -1,5 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.password_validation import validate_password
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class MyUserManager(BaseUserManager):
     # Defines methods to create users and superusers for custom MyUser model.
@@ -35,7 +40,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     # Custom user model
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=255, unique=True)
-    is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
@@ -50,13 +54,16 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = "myuser"
 
+    def save(self, *args, **kwargs) -> None:
+        validate_password(self.password)
+        return super().save(*args, **kwargs)
+
 
 class MyStaff(models.Model):
     roles = [
-        ("SALES", "Sales"),
-        ("MANAGER", "Manager"),
-        ("CHEF", "Chef"),
-        ("OTHER", "Other")
+        ("SALES", "Sales"),             # orders, dashboard
+        ("MANAGER", "Manager"),         # all
+        ("CHEF", "Chef")                # inventory, menu
     ]
     id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
@@ -65,3 +72,8 @@ class MyStaff(models.Model):
 
     class Meta:
         db_table = "mystaff"
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+        

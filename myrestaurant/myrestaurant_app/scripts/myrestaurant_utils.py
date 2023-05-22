@@ -35,6 +35,7 @@ def ordered_lte_available(quantity, menu_model):
 
 # Function to process units field in  Menu Inventory many-to-many relationship
 def create_update_menu(validated_data, model, through_model, pk=None):
+    logger.debug(validated_data)
     try:
         ingredients = validated_data.pop('ingredients')
     except:
@@ -45,7 +46,9 @@ def create_update_menu(validated_data, model, through_model, pk=None):
     ingredients_cost = sum([item.unit_price * Decimal(units[str(item.pk)]) for item in ingredients])
 
     # Create menu model instance
+    logger.debug(validated_data)
     menu_item, created = model.objects.update_or_create(pk=pk, defaults={**validated_data, "ingredients_cost": ingredients_cost})
+    logger.debug("created menu_item")
 
     # Delete entries in menuInventory
     through_model.objects.filter(menu_id=pk).delete()

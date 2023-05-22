@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import OrderSerializer, MenuSerializer, InventorySerializer, DashboardSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
-from .permissions import ReadOnly, Staff
+from .permissions import ReadOnly, Staff, Chef, Sales, Manager
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from myrestaurant_app.scripts.dashboard_utils import summary_statistics
 from myrestaurant_app.scripts.myrestaurant_utils import ordered_lte_available
@@ -29,7 +29,7 @@ class JWTAuthenticationSafe(JWTAuthentication):
 class OrderViewSet(viewsets.ModelViewSet): 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [Staff]
+    permission_classes = [Manager | Sales]
 
     def create(self, request, *args, **kwargs):
         quantity = json.loads(request.data.get("quantity"))
@@ -38,6 +38,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
     
     def partial_update(self, request, *args, **kwargs):
+
+        # Check checkboxes are ticked in order prepared > delivered > complete
+        order = Order.objects.get(pk=kwargs['pk'])
+        if request.data.get("delivered", False) and not order.prepared:
+            return Response({"error": "Please make sure order is prepared first."})
+        elif request.data.get("complete", False) and (not order.prepared or not order.delivered):
+            return Response({"error": "Please make sure order is prepared and delivered first."})
+
+        # Check if quantity ordered is greater than available
         if request.data.get("quantity", False):
             quantity = json.loads(request.data.get("quantity"))
             if not ordered_lte_available(quantity, Menu):
@@ -52,7 +61,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 class ArchivedOrdersView(generics.ListAPIView):
     queryset = Order.objects.filter(complete=True)
     serializer_class = OrderSerializer
-    permission_classes = [ReadOnly]
+    permission_classes = [Manager | Sales]
         
 
 class MenuViewSet(viewsets.ModelViewSet): 
@@ -60,7 +69,7 @@ class MenuViewSet(viewsets.ModelViewSet):
     serializer_class = MenuSerializer
     lookup_field = "slug"
     parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [Staff|ReadOnly]
+    permission_classes = [Manager | Chef | ReadOnly]
     authentication_classes = [JWTAuthenticationSafe]
 
     def partial_update(self, request, *args, **kwargs):
@@ -84,13 +93,13 @@ class MenuViewSet(viewsets.ModelViewSet):
 class InventoryViewSet(viewsets.ModelViewSet):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
-    permission_classes = [Staff|ReadOnly]
+    permission_classes = [Manager | Chef | ReadOnly]
     authentication_classes = [JWTAuthenticationSafe]
 
 
 class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     serializer_class = DashboardSerializer
-    permission_classes = [Staff]
+    permission_classes = [Manager | Sales]
 
     def retrieve(self, request, *args, **kwargs):
         data = summary_statistics()
