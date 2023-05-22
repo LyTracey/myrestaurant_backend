@@ -51,6 +51,7 @@ class MenuSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         new_data = data.copy()
+        logger.debug(data)
         units = json.loads(new_data.pop("units")[0])
         internal_representation = super().to_internal_value(new_data)
         internal_representation["units"] = units

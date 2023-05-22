@@ -9,6 +9,7 @@ import logging
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .permissions import IsAdmin, IsUser
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ def user_handler(sender, instance, **kwargs):
     return Response({'message': "User updated."})
 
 
-class RegisterViewset(CreateAPIView, UpdateAPIView):
+class RegisterViewset(CreateAPIView):
     queryset = MyUser.objects.all()
     serializer_class = RegisterSerializer
 
@@ -37,14 +38,19 @@ class ProfileViewset(RetrieveAPIView, UpdateAPIView):
     permission_classes = [IsAdmin | IsUser]
 
 class TokenView(TokenObtainPairView):
+
     def finalize_response(self, request, response, *args, **kwargs):
 
         new_response = super().finalize_response(request, response, *args, **kwargs)
 
         if response.data.get('access'):
+            user = MyUser.objects.get(username=request.data['username'])
+            
+            # Update last_login
+            MyUser.objects.update_or_create(username=user.username, defaults={"last_login": datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")})
+            
             # Return is_staff
-            # user = MyUser.objects.filter(username=request.data['username']).first()
-            new_response.data['isStaff'] = request.user.is_staff
+            new_response.data['isStaff'] = user.is_staff
 
         # Return the refresh token as a http-only cookie - token can be stored as sessionStorage
         if response.data.get('refresh'):

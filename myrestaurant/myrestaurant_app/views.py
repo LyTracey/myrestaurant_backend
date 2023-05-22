@@ -38,6 +38,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
     
     def partial_update(self, request, *args, **kwargs):
+
+        # Check checkboxes are ticked in order prepared > delivered > complete
+        order = Order.objects.get(pk=kwargs['pk'])
+        if request.data.get("delivered", False) and not order.prepared:
+            return Response({"error": "Please make sure order is prepared first."})
+        elif request.data.get("complete", False) and (not order.prepared or not order.delivered):
+            return Response({"error": "Please make sure order is prepared and delivered first."})
+
+        # Check if quantity ordered is greater than available
         if request.data.get("quantity", False):
             quantity = json.loads(request.data.get("quantity"))
             if not ordered_lte_available(quantity, Menu):

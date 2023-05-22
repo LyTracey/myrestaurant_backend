@@ -2,11 +2,13 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from .models import MyUser, MyStaff
 import logging
-import json
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.serializers import ValidationError
 
 logger = logging.getLogger(__name__)
 
 class RegisterSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = MyUser
         fields = ["username", "password", "is_staff"]
@@ -20,6 +22,7 @@ class MyStaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyStaff
         fields = ["role"]
+
 
 class ProfileSerializer(serializers.ModelSerializer):
 
