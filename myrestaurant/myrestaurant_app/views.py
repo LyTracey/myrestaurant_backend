@@ -6,7 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import ReadOnly, Staff, Chef, Sales, Manager
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from myrestaurant_app.scripts.dashboard_utils import summary_statistics
-from myrestaurant_app.scripts.myrestaurant_utils import ordered_lte_available
+from myrestaurant_app.scripts.view_utils import ordered_lte_available
 from rest_framework import status
 import logging
 from operator import itemgetter
@@ -102,6 +102,7 @@ class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     permission_classes = [Manager | Sales]
 
     def retrieve(self, request, *args, **kwargs):
+        logger.debug("calling summary stats in views")
         data = summary_statistics()
         return Response(data=data, status=status.HTTP_200_OK)
     

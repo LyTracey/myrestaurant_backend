@@ -1,0 +1,58 @@
+[
+    {
+        "id": 1,
+        "ingredient": "Garlic",
+        "slug": "garlic",
+        "quantity": 14,
+        "unit_price": "0.20"
+    }, 
+    {
+        "id": 2,
+        "ingredient": "Pork Mince",
+        "slug": "pork-mince",
+        "quantity": 4,
+        "unit_price": "2.35"
+    }, 
+    {
+        "id": 3,
+        "ingredient": "Chives",
+        "slug": "chives",
+        "quantity": 5,
+        "unit_price": "1.90"
+    },
+    {
+        "id": 4,
+        "ingredient": "Plain Flour",
+        "slug": "plain-flour",
+        "quantity": 5,
+        "unit_price": "0.50"
+    },
+    {
+        "id": 5,
+        "ingredient": "Butter",
+        "slug": "butter",
+        "quantity": 10,
+        "unit_price": "1.25"
+    },
+    {
+        "id": 6,
+        "ingredient": "Sugar",
+        "slug": "sugar",
+        "quantity": 5,
+        "unit_price": "1.10"
+    },
+    {
+        "id": 7,
+        "ingredient": "Ham",
+        "slug": "ham",
+        "quantity": 7,
+        "unit_price": "1.20"
+    },
+    {
+        "id": 8,
+        "ingredient": "Cheese",
+        "slug": "cheese",
+        "quantity": 4,
+        "unit_price": "2.50"
+    }
+]

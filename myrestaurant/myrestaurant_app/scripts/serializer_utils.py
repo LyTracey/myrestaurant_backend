@@ -1,55 +1,23 @@
 import logging
-import os
-from django.conf import settings
-from django.utils.text import slugify
-from decimal import Decimal
-from .dashboard_utils import get_availability
 from datetime import datetime
-
+from .dashboard_utils import get_availability
 
 logger = logging.getLogger(__name__)
-
-# Slugify
-def auto_slug(self, property: str):
-    if not self.slug:
-        self.slug = slugify(property)
-
-# Function to request overwriting file
-def overwrite(serializer):
-    if serializer.data["overwrite"]:
-        file = str(serializer.data['image'])
-        logger.info(f"User wants to overwrite file {file}.")
-        original_image_url = os.path.join(settings.MEDIA_ROOT, "menu", file)
-        os.remove(original_image_url)
-        logger.info("Original file removed.")
-
-
-# Check if quantity ordered is less than available quantity
-def ordered_lte_available(quantity, menu_model):
-    for item in quantity.keys():
-        menu_obj = menu_model.objects.get(pk=int(item))
-        if get_availability(menu_obj) < quantity[item]:
-            return False
-    return True
         
 
-# Function to process units field in  Menu Inventory many-to-many relationship
 def create_update_menu(validated_data, model, through_model, pk=None):
-    logger.debug(validated_data)
+    """
+        Function to process units field in  Menu Inventory many-to-many relationship
+    """
     try:
         ingredients = validated_data.pop('ingredients')
     except:
         ingredients = []
     units = validated_data.pop('units')
 
-    # Calculate ingredients_cost
-    ingredients_cost = sum([item.unit_price * Decimal(units[str(item.pk)]) for item in ingredients])
-
     # Create menu model instance
-    logger.debug(validated_data)
-    menu_item, created = model.objects.update_or_create(pk=pk, defaults={**validated_data, "ingredients_cost": ingredients_cost})
-    logger.debug("created menu_item")
-
+    menu_item, created = model.objects.update_or_create(pk=pk, defaults={**validated_data})
+    
     # Delete entries in menuInventory
     through_model.objects.filter(menu_id=pk).delete()
 
@@ -61,18 +29,19 @@ def create_update_menu(validated_data, model, through_model, pk=None):
             units=units[str(item.pk)]
         )
     
+    # Add available_quantity field
+    menu_item.available_quantity = get_availability(menu_item)
+    menu_item.save()
+    
     return menu_item
+
 
 def create_update_order(validated_data, model, through_model, inventory_model, menu_model, pk=None):
     menu_items = validated_data.pop('menu_items')
     quantity = validated_data.pop('quantity')
 
-
-    # Calculate total_cost of order
-    total_cost = sum([item.price * Decimal(quantity[str(item.pk)]) for item in menu_items])
-
     # Create order model instance
-    order, created = model.objects.update_or_create(pk=pk, defaults={**validated_data, "total_cost": total_cost})
+    order, created = model.objects.update_or_create(pk=pk, defaults={**validated_data})
 
     # Add back inventory items before deleting
     if not created:
