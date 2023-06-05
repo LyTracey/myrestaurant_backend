@@ -30,6 +30,11 @@ class RegisterViewset(CreateAPIView):
     queryset = MyUser.objects.all()
     serializer_class = RegisterSerializer
 
+    def post(self, request, *args, **kwargs):
+        logger.debug("in post method")
+        logger.debug(request.data)
+        return super().post(request, *args, **kwargs)
+
 
 class ProfileViewset(RetrieveAPIView, UpdateAPIView):
     queryset = MyUser.objects.all()
