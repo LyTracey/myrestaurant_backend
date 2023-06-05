@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Inventory, Menu, Order, MenuInventory, OrderMenu
 import logging
-from .scripts.myrestaurant_utils import create_update_menu, create_update_order, format_date
+from .scripts.serializer_utils import create_update_menu, create_update_order, format_date
 import json
 
 
@@ -46,12 +46,11 @@ class MenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ["id", "title", "image", "description", "ingredients", "price", "units", "in_stock", "available_quantity"]
+        fields = ["id", "title", "image", "description", "ingredients", "price", "units", "available_quantity"]
         lookup_field = "slug"
 
     def to_internal_value(self, data):
         new_data = data.copy()
-        logger.debug(data)
         units = json.loads(new_data.pop("units")[0])
         internal_representation = super().to_internal_value(new_data)
         internal_representation["units"] = units

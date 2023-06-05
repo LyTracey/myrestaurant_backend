@@ -11,16 +11,15 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from configparser import ConfigParser
 import os
+from dotenv import load_dotenv
 from datetime import timedelta
-
-# Set up config parser
-config = ConfigParser()
-config.read('.ini')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables
+load_dotenv(os.path.join(BASE_DIR, "myrestaurant", ".env"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -88,16 +87,14 @@ WSGI_APPLICATION = 'myrestaurant.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-db = config['database']
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': db['NAME'],
-        'USER': db['USER'],
-        'PASSWORD': db['PASSWORD'],
-        'HOST': db['HOST'],
-        'PORT': db['PORT']
+        'NAME': os.getenv('NAME'),
+        'USER': os.getenv('USERNAME'),
+        'PASSWORD': os.getenv('PASSWORD'),
+        'HOST': os.getenv('HOST'),
+        'PORT': os.getenv('PORT')
     }
 }
 

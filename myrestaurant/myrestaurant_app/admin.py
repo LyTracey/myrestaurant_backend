@@ -1,10 +1,8 @@
 from django.contrib import admin
-from rest_framework import routers
-from .views import OrderViewSet, MenuViewSet, InventoryViewSet
+from .models import Inventory, Menu, Order, OrderMenu, MenuInventory
 
-router = routers.SimpleRouter()
-router.register(r'orders', OrderViewSet)
-router.register(r'menu', MenuViewSet)
-router.register(r'inventory', InventoryViewSet)
-
-urlpatterns = router.urls
+admin.site.register(Inventory)
+admin.site.register(Menu)
+admin.site.register(Order)
+admin.site.register(OrderMenu)
+admin.site.register(MenuInventory)

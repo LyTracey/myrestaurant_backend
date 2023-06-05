@@ -1,0 +1,8 @@
+.coverage
+htmlcov
+.dockerignore
+Dockerfile
+Dockerfile.prod
+.venv
+.DS_Store
+__pycache__
