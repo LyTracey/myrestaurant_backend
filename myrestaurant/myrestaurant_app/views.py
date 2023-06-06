@@ -102,7 +102,6 @@ class DashboardView(RetrieveUpdateAPIView, GenericAPIView):
     permission_classes = [Manager | Sales]
 
     def retrieve(self, request, *args, **kwargs):
-        logger.debug("calling summary stats in views")
         data = summary_statistics()
         return Response(data=data, status=status.HTTP_200_OK)
     

@@ -35,7 +35,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ["username"]
 
     def to_internal_value(self, data):
-        logger.debug(data)
         internal_value = data.copy()
         if data.__contains__("role"):
             role = internal_value.pop("role")[0]

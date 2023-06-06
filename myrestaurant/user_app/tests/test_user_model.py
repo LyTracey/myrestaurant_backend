@@ -27,15 +27,19 @@ class MyUserModelTestCase (TestCase):
 
 
     def test_myuser_password_validation(self) -> None:
-            """
-                Test that user passwords must follow a certain regex pattern i.e. at least 1 captial letter, 1 lowercase letter, 1 number, and be at least 6 characters.
-            """
-            
-            with self.assertRaises(ValidationError):
-                MyUser.objects.create_user(username="xyz", password="create")
+        """
+            Test that user passwords must follow a certain regex pattern i.e. at least 1 captial letter, 1 lowercase letter, 1 number, and be at least 6 characters.
+        """
+        
+        with self.assertRaises(ValidationError):
+            MyUser.objects.create_user(username="abc", password="CreaTe")
 
-            user = MyUser.objects.create_user(username="xyz", password="Create9")
-            self.assertEqual(user.password, "Create9")
+        with self.assertRaises(ValidationError):
+            MyUser.objects.create_user(username="xyz", password="create")
+
+        with self.assertRaises(ValidationError):
+            MyUser.objects.create_user(username="qrs", password="create7")
+
 
 
     def test_mystaff_cascades(self) -> None:

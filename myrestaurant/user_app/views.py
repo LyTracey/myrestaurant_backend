@@ -31,8 +31,6 @@ class RegisterViewset(CreateAPIView):
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
-        logger.debug("in post method")
-        logger.debug(request.data)
         return super().post(request, *args, **kwargs)
 
 
@@ -52,7 +50,7 @@ class TokenView(TokenObtainPairView):
             user = MyUser.objects.get(username=request.data['username'])
             
             # Update last_login
-            MyUser.objects.update_or_create(username=user.username, defaults={"last_login": datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")})
+            MyUser.objects.update_or_create(username=user.username, defaults={"last_login": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
             
             # Return is_staff
             new_response.data['isStaff'] = user.is_staff

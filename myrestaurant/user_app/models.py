@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 class MyUserManager(BaseUserManager):
     # Defines methods to create users and superusers for custom MyUser model.
+
     def create_user(self, username, password=None, **kwargs):
         
         # Require username field
@@ -19,6 +20,7 @@ class MyUserManager(BaseUserManager):
             **kwargs
         )
 
+        validate_password(password)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -53,10 +55,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = "myuser"
-
-    def save(self, *args, **kwargs) -> None:
-        validate_password(self.password)
-        return super().save(*args, **kwargs)
 
 
 class MyStaff(models.Model):
