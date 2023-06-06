@@ -36,7 +36,7 @@ def get_revenue(start_date=START_DATE, end_date=END_DATE, frequency="1W") -> lis
 
     # Create dataframe
     df: pd.DataFrame = pd.DataFrame(columns=["date", "revenue"])
-    df["date"]: pd.Series = orders.values_list("ordered_at", flat=True)
+    df["date"]: pd.Series = pd.to_datetime(orders.values_list("ordered_at", flat=True), format="%Y-%m-%d %H:%M:%S")
     df["revenue"]: pd.Series = revenue
 
     # Sum revenues by frequecy period
@@ -59,7 +59,7 @@ def get_profit(start_date=START_DATE, end_date=END_DATE, frequency="1W"):
 
     # Create dataframe
     df: pd.DataFrame = pd.DataFrame(columns=["date", "profit"])
-    df["date"]: pd.Series = orders.values_list("ordered_at", flat=True)
+    df["date"]: pd.Series = pd.to_datetime(orders.values_list("ordered_at", flat=True), format="%Y-%m-%d %H:%M:%S")
     df["profit"]: pd.Series = profit_per_order
 
     # Sum profits by frequency period
