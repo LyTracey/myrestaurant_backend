@@ -29,7 +29,7 @@ load_dotenv(os.path.join(BASE_DIR, "myrestaurant", ".env"))
 SECRET_KEY = 'django-insecure-q*3#0us#bblm$jo#wg4&0n3!np31o^=qzf7^chpu#dx)yyjf19'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
 
