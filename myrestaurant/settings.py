@@ -26,13 +26,13 @@ load_dotenv(os.path.join(BASE_DIR, "myrestaurant", ".env"))
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q*3#0us#bblm$jo#wg4&0n3!np31o^=qzf7^chpu#dx)yyjf19'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
-
+os.environ['HTTPS'] = "on"
 
 # Application definition
 
@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
 ]
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
