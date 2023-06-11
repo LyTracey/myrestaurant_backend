@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'myrestaurant.wsgi.app'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'URL': os.getenv("DB_URL"),
         'NAME': os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
