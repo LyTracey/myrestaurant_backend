@@ -14,7 +14,6 @@ def flush_db():
     Order.objects.all().delete()
     Menu.objects.all().delete()
     Inventory.objects.all().delete()
-    MyUser.objects.all().delete()
 
 
 def load_data(json_file, model_func, related_model=None, **kwargs):
