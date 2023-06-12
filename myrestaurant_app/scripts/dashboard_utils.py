@@ -23,7 +23,7 @@ def get_max_dates():
 
 START_DATE, END_DATE = get_max_dates()
 
-def get_revenue(start_date=START_DATE, end_date=END_DATE, frequency="1W") -> list[dict]:
+def get_revenue(start_date=START_DATE, end_date=END_DATE, frequency="W-MON") -> list[dict]:
     """
         Return revenue within date range if specified, grouped by frequency (default 1 week).
     """
@@ -40,13 +40,13 @@ def get_revenue(start_date=START_DATE, end_date=END_DATE, frequency="1W") -> lis
     df["revenue"]: pd.Series = revenue
 
     # Sum revenues by frequecy period
-    grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency)).sum().reset_index()
+    grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency, closed="right")).sum().reset_index()
     grouped_df["date"] = grouped_df["date"].dt.strftime('%d-%m-%Y')
 
     return grouped_df.round(2).to_dict(orient="records")
 
 
-def get_profit(start_date=START_DATE, end_date=END_DATE, frequency="1W"):
+def get_profit(start_date=START_DATE, end_date=END_DATE, frequency="W-MON"):
     """
         Return profit within date range if specified, grouped by frequency (default 1 week).
     """
@@ -135,10 +135,10 @@ def summary_statistics(start_date=None, end_date=None, frequency=None):
 
 
 
-# def run():
-#     start_date = "2023-05-12 00:00:00"
-#     end_date = "2023-05-14 00:00:00"
-#     # total = sum([d["revenue"] for d in get_revenue()])
-#     # obj = Menu.objects.first()
-#     print(get_out_of_stock())
+def run():
+    # start_date = "2023-05-12 00:00:00"
+    # end_date = "2023-05-14 00:00:00"
+    # # total = sum([d["revenue"] for d in get_revenue()])
+    # # obj = Menu.objects.first()
+    print(get_revenue(frequency="QS"))
     

@@ -1,7 +1,8 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from myrestaurant_app.models import MenuInventory, OrderMenu
+from myrestaurant_app.models import MenuInventory, OrderMenu, Order
 import logging
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -12,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 @receiver(post_save, sender=MenuInventory, dispatch_uid="update_menuinventory")
-def menu_handler(sender, instance, **kwargs):
+def menuinventory_handler(sender, instance, **kwargs):
     """
-        Post-save handler for Menu model to calculate derived ingredients_cost field.
+        Post-save handler for MenuInventory model to calculate derived ingredients_cost field.
     """
 
     menu_item_ingredients = MenuInventory.objects.filter(menu_id=instance.menu_id)
@@ -25,9 +26,9 @@ def menu_handler(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=OrderMenu)
-def menu_handler(sender, instance, **kwargs):
+def ordermenu_handler(sender, instance, **kwargs):
     """
-        Post-save handler for Order model to calculate derived total_cost field.
+        Post-save handler for OrderMenu model to calculate derived total_cost field.
     """
 
     order_menu_items = sender.objects.filter(order_id=instance.order_id)
@@ -35,6 +36,29 @@ def menu_handler(sender, instance, **kwargs):
    
     instance.order_id.total_cost = total_cost
     instance.order_id.save()
+
+
+@receiver(pre_save, sender=Order)
+def order_handler(sender, instance, **kwargs):
+    """
+        Pre-save handler for Order model to update prepared_at and ordered_at fields if their corresponding field is True.
+        E.g. is prepared == True and  , prepared_at should be updated with
+    """
+    
+    if instance.prepared_at is not None:
+        return
+    elif instance.prepared == True and instance.prepared_at is None:
+        instance.prepared_at = datetime.now()
+    else:
+        instance.prepared_at = None
+
+
+    if instance.delivered_at is not None:
+        return
+    elif instance.delivered == True and instance.delivered_at is None:
+        instance.delivered_at = datetime.now()
+    else:
+        instance.delivered_at = None
 
 
 

@@ -1,7 +1,9 @@
+from typing import Iterable, Optional
 from django.db import models
 from .scripts.model_utils import auto_slug
 from django.core.validators import MinValueValidator
 import logging
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
