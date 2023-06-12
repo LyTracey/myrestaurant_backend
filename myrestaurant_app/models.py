@@ -1,7 +1,9 @@
+from typing import Iterable, Optional
 from django.db import models
 from .scripts.model_utils import auto_slug
 from django.core.validators import MinValueValidator
 import logging
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +12,7 @@ class Inventory(models.Model):
     ingredient = models.CharField(max_length=30, unique=True)
     slug = models.SlugField(unique=True, max_length=30, blank=True)
     quantity = models.PositiveSmallIntegerField(default=0)
-    unit_price = models.DecimalField(max_digits=5, decimal_places=2, default=None, blank=True)
+    unit_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     image = models.ImageField(upload_to='inventory', blank=True)
     
     class Meta:
@@ -31,9 +33,9 @@ class Menu(models.Model):
     image = models.ImageField(upload_to='menu', blank=True, null=True)
     description = models.TextField(blank=True)
     ingredients = models.ManyToManyField(Inventory, through="MenuInventory")
-    ingredients_cost = models.DecimalField(max_digits=5, default=None, null=True, blank=True, decimal_places=2)
-    price = models.DecimalField(max_digits=5 , decimal_places=2, default=None, blank=True, null=True)
-    available_quantity = models.PositiveSmallIntegerField(blank=True, default=0, validators=[MinValueValidator(0, message="unit is not a positive")])
+    ingredients_cost = models.DecimalField(max_digits=5, default=0, decimal_places=2)
+    price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    available_quantity = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0, message="Unit is not a positive")])
 
     class Meta:
         db_table = "menu"
@@ -56,7 +58,7 @@ class Order(models.Model):
     delivered = models.BooleanField(default=False)
     delivered_at = models.DateTimeField(default=None, null=True)
     complete = models.BooleanField(default=False, null=True)
-    total_cost = models.DecimalField(max_digits=5, default=None, blank=True, null=True, decimal_places=2)
+    total_cost = models.DecimalField(max_digits=5, default=0, decimal_places=2)
 
     class Meta:
         db_table = "orders"
@@ -68,7 +70,7 @@ class MenuInventory(models.Model):
     id = models.BigAutoField(primary_key=True)
     menu_id = models.ForeignKey(Menu, on_delete=models.CASCADE, db_column="menu_id")
     inventory_id = models.ForeignKey(Inventory, on_delete=models.CASCADE, db_column="inventory_id")
-    units = models.DecimalField(max_digits=5, decimal_places=2, default=None, null=True, validators=[MinValueValidator(0, message="unit is not a positive")])
+    units = models.DecimalField(max_digits=5, decimal_places=2, default=0, validators=[MinValueValidator(0, message="unit is not a positive")])
 
     class Meta:
         db_table = "menu_inventory"

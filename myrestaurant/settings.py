@@ -93,12 +93,13 @@ WSGI_APPLICATION = 'myrestaurant.wsgi.app'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("NAME"),
-        'USER': os.getenv("USERNAME"),
-        'PASSWORD': os.getenv("PASSWORD"),
-        'HOST': os.getenv("HOST"),
-        'PORT': os.getenv("PORT")
+        'ENGINE': 'django.db.backends.mysql',
+        'URL': os.getenv("DB_URL"),
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT")
     }
 }
 
@@ -215,13 +216,13 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://www.tea-ly.co.uk/"
+    "https://www.tea-ly.co.uk"
 ]
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
 
-DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
-DATE_FORMAT = "%d-%m-Y"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+DATE_FORMAT = "%Y-%m-%d"
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
