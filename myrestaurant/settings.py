@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -215,9 +216,13 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://127.0.0.1:3000",
     "https://www.tea-ly.co.uk"
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
 
@@ -225,6 +230,7 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "UPDATE_LAST_LOGIN": True
 }

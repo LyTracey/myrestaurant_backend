@@ -6,10 +6,9 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import logging
-from .serializers import RegisterSerializer, ProfileSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import RegisterSerializer, ProfileSerializer, MyTokenRefreshSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .permissions import IsAdmin, IsUser
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +29,6 @@ class RegisterViewset(CreateAPIView):
     queryset = MyUser.objects.all()
     serializer_class = RegisterSerializer
 
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
 
 class ProfileViewset(RetrieveAPIView, UpdateAPIView):
     queryset = MyUser.objects.all()
@@ -40,7 +36,7 @@ class ProfileViewset(RetrieveAPIView, UpdateAPIView):
     lookup_field = "username"
     permission_classes = [IsAdmin | IsUser]
 
-class TokenView(TokenObtainPairView):
+class MyTokenObtainPairView(TokenObtainPairView):
 
     def finalize_response(self, request, response, *args, **kwargs):
 
@@ -49,17 +45,29 @@ class TokenView(TokenObtainPairView):
         if response.data.get('access'):
             user = MyUser.objects.get(username=request.data['username'])
             
-            # Update last_login
-            MyUser.objects.update_or_create(username=user.username, defaults={"last_login": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
-            
-            # Return is_staff
-            new_response.data['isStaff'] = user.is_staff
+            # Return username
+            new_response.data['username'] = user.username
 
         # Return the refresh token as a http-only cookie - token can be stored as sessionStorage
-        if response.data.get('refresh'):
-            lifetime = 3600 * 24
-            new_response.set_cookie('refresh', response.data['refresh'], max_age=lifetime, httponly=True)
-            del new_response.data['refresh']
-        
 
+        if response.data.get('refresh'):
+            refresh_lifetime = 60 * 60 * 24 # Set expiry datetime of refresh cookie to 15 days
+            new_response.set_cookie('refresh', 
+                response.data['refresh'], 
+                max_age=refresh_lifetime, 
+                httponly=True, 
+                secure=True,
+                samesite=None
+            )
+            del new_response.data['refresh']
+    
         return new_response
+
+
+class MyTokenRefreshView(TokenRefreshView):
+    serializer_class = MyTokenRefreshSerializer
+
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+    
+    

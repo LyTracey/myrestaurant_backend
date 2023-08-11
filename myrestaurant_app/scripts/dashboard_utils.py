@@ -1,5 +1,6 @@
 from myrestaurant_app.models import Inventory, Order, Menu
-from datetime import datetime
+from datetime import datetime as dt
+import datetime
 import pandas as pd
 from django.db.models import QuerySet
 import logging
@@ -16,20 +17,32 @@ def get_max_dates():
     try:
         start = Order.objects.earliest("ordered_at").ordered_at
     except:
-        start = datetime.now()
+        start = dt.now()
 
-    return [start, datetime.now()]
+    return [start, dt.now()]
 
 
 START_DATE, END_DATE = get_max_dates()
 
-def get_revenue(start_date=START_DATE, end_date=END_DATE, frequency="W-MON") -> list[dict]:
+def str_to_datetime(start_date, end_date):
+    if isinstance(start_date, str):
+        start_date = dt.strptime(start_date, "%Y-%m-%d")
+    
+    if isinstance(end_date, str):
+        end_date = dt.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1)
+    
+    return start_date, end_date
+
+
+def get_revenue(start_date=START_DATE, end_date=END_DATE, frequency="B") -> list[dict]:
     """
         Return revenue within date range if specified, grouped by frequency (default 1 week).
     """
 
+    start_date, end_date = str_to_datetime(start_date, end_date)
+
     # Get orders
-    orders: QuerySet = Order.objects.filter(ordered_at__range=(start_date, end_date))
+    orders: QuerySet = Order.objects.filter(ordered_at__range=[start_date, end_date])
     
     # Calculate revenue
     revenue: list[float] = [order.total_cost for order in orders]
@@ -40,19 +53,21 @@ def get_revenue(start_date=START_DATE, end_date=END_DATE, frequency="W-MON") -> 
     df["revenue"]: pd.Series = revenue
 
     # Sum revenues by frequecy period
-    grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency, closed="right")).sum().reset_index()
+    grouped_df = df.groupby(pd.Grouper(key="date", freq=frequency)).sum().reset_index()
     grouped_df["date"] = grouped_df["date"].dt.strftime('%d-%m-%Y')
 
     return grouped_df.round(2).to_dict(orient="records")
 
 
-def get_profit(start_date=START_DATE, end_date=END_DATE, frequency="W-MON"):
+def get_profit(start_date=START_DATE, end_date=END_DATE, frequency="B"):
     """
         Return profit within date range if specified, grouped by frequency (default 1 week).
     """
 
+    start_date, end_date = str_to_datetime(start_date, end_date)
+
     # Get orders in time range
-    orders = Order.objects.filter(ordered_at__range=([start_date, end_date]))
+    orders = Order.objects.filter(ordered_at__range=[start_date, end_date])
 
     # Calculate profit per order
     profit_per_order = [order.total_cost - sum(menu_item.quantity * menu_item.menu_id.ingredients_cost for menu_item in order.ordermenu_set.all()) for order in orders]
@@ -73,6 +88,8 @@ def get_item_sales(start_date=START_DATE, end_date=END_DATE):
     """
         Get each menu item and return the quantity sold in the specified timeframe.
     """
+
+    start_date, end_date = str_to_datetime(start_date, end_date)
 
     orders = Order.objects.filter(ordered_at__range=([start_date, end_date]))
     menu = set(chain.from_iterable([(menu_item.menu_id for menu_item in order.ordermenu_set.all()) for order in orders]))
@@ -119,6 +136,8 @@ def get_availability(instance):
 
 
 def summary_statistics(start_date=None, end_date=None, frequency=None):
+    start_date, end_date = str_to_datetime(start_date, end_date)
+
     low_stock = get_low_stock()
     out_of_stock = get_out_of_stock()
     revenue = get_revenue(start_date, end_date, frequency)
@@ -133,12 +152,5 @@ def summary_statistics(start_date=None, end_date=None, frequency=None):
     }
 
 
-
-
-def run():
-    # start_date = "2023-05-12 00:00:00"
-    # end_date = "2023-05-14 00:00:00"
-    # # total = sum([d["revenue"] for d in get_revenue()])
-    # # obj = Menu.objects.first()
-    print(get_revenue(frequency="QS"))
-    
+# def run():
+#     print(get_revenue())
