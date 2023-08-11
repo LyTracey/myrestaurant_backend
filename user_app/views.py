@@ -57,7 +57,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
                 max_age=refresh_lifetime, 
                 httponly=True, 
                 secure=True,
-                samesite="Lax",
+                samesite=None,
                 domain="https://127.0.0.1:3000/"
             )
             del new_response.data['refresh']
