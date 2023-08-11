@@ -2,8 +2,8 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from .models import MyUser, MyStaff
 import logging
-from django.contrib.auth.password_validation import validate_password
-from rest_framework.serializers import ValidationError
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+
 
 logger = logging.getLogger(__name__)
 
@@ -60,5 +60,18 @@ class ProfileSerializer(serializers.ModelSerializer):
             representation["role"] = staff.role
         return representation
 
+class MyTokenRefreshSerializer(TokenRefreshSerializer):
+    """
+        Custom refresh token serializer. Gets refresh token as http only cookie rather than the 
+        "refresh" property in the payload.
+    """
 
+    refresh = serializers.CharField(required=False)     # Remove requirement for the refresh token being in the payload
+
+    def validate(self, attrs):
+
+        # Extract refresh token from cookies
+        token = {"refresh": self.context["request"].COOKIES["refresh"]}
+        logger.debug(token)
+        return super().validate(token)
 
