@@ -10,7 +10,9 @@ router.register(r"inventory", views.InventoryViewSet, basename="inventory")
 urlpatterns = [
     path('', include(router.urls)),
     path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
-    path("archive/orders/",  views.ArchivedOrdersView.as_view(), name="archived-orders")
+    path('dashboard-stock/', views.DashboardStockView.as_view(), name="dashboard_stock"),
+    path("archive/orders/",  views.ArchivedOrdersView.as_view(), name="archived_orders"),
+    path("inventory-reference/", views.InventoryReferenceView.as_view(), name="inventory_reference")
 ]
 
 for url in router.urls:

@@ -42,23 +42,26 @@ def ordermenu_handler(sender, instance, **kwargs):
 def order_handler(sender, instance, **kwargs):
     """
         Pre-save handler for Order model to update prepared_at and ordered_at fields if their corresponding field is True.
-        E.g. is prepared == True and  , prepared_at should be updated with
+        E.g. is prepared == True then prepared_at should be updated with the current time.
     """
-    
-    if instance.prepared_at is not None:
-        return
+
+    if instance.prepared == False:
+        instance.prepared_at = None
     elif instance.prepared == True and instance.prepared_at is None:
         instance.prepared_at = datetime.now()
-    else:
-        instance.prepared_at = None
 
-
-    if instance.delivered_at is not None:
-        return
+    if instance.delivered == False:
+        instance.delivered_at = None
     elif instance.delivered == True and instance.delivered_at is None:
         instance.delivered_at = datetime.now()
-    else:
-        instance.delivered_at = None
+
+
+    # if instance.delivered_at is not None:
+    #     return
+    # elif instance.delivered == True and instance.delivered_at is None:
+    #     instance.delivered_at = datetime.now()
+    # else:
+    #     instance.delivered_at = None
 
 
 

@@ -39,6 +39,7 @@ class MyUserManager(BaseUserManager):
         return user
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
+    
     # Custom user model
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=255, unique=True)
