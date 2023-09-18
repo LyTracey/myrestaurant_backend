@@ -201,7 +201,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
+        'anon': '300/day',
         'user': '500/day',
         'burst': '30/min'
     },
@@ -218,12 +218,12 @@ REST_FRAMEWORK = {
 CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
     "https://www.tea-ly.co.uk", 
-    "http://localhost:3000",
-    "http://localhost:8000",
+    # "http://localhost:3000",
+    # "http://localhost:8000",
 ] # Allows login request to django admin
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
+    # "http://127.0.0.1:3000",
     "http://localhost:3000",
     "https://www.tea-ly.co.uk"
 ]
