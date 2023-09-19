@@ -1,8 +1,18 @@
 from rest_framework import serializers
-from rest_framework.fields import empty
 from .models import MyUser, MyStaff
 import logging
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['name'] = user.name
+        # ...
+
+        return token
 
 
 logger = logging.getLogger(__name__)
@@ -22,6 +32,16 @@ class MyStaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyStaff
         fields = ["role"]
+
+class MyTokenObtainPairSerializer (TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+
+        return token
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -59,19 +79,4 @@ class ProfileSerializer(serializers.ModelSerializer):
             representation["join_date"] = staff.join_date
             representation["role"] = staff.role
         return representation
-
-class MyTokenRefreshSerializer(TokenRefreshSerializer):
-    """
-        Custom refresh token serializer. Gets refresh token as http only cookie rather than the 
-        "refresh" property in the payload.
-    """
-
-    refresh = serializers.CharField(required=False)     # Remove requirement for the refresh token being in the payload
-
-    def validate(self, attrs):
-
-        # Extract refresh token from cookies
-        token = {"refresh": self.context["request"].COOKIES["refresh"]}
-        logger.debug(token)
-        return super().validate(token)
 

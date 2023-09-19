@@ -14,7 +14,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
-from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,9 +29,9 @@ load_dotenv(os.path.join(BASE_DIR, "myrestaurant", ".env"))
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "tly.pythonanywhere.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "tly.pythonanywhere.com"]
 os.environ['HTTPS'] = "on"
 
 # Application definition
@@ -50,11 +49,8 @@ INSTALLED_APPS = [
     'user_app',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
-
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -205,32 +201,47 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
-        'user': '300/day',
+        'anon': '300/day',
+        'user': '500/day',
         'burst': '30/min'
     },
     'TEST_REQUEST_RENDERER_CLASSES': [
-    'rest_framework.renderers.MultiPartRenderer',
-    'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ]
+
 }
 
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://www.tea-ly.co.uk", 
+    # "http://localhost:3000",
+    # "http://localhost:8000",
+] # Allows login request to django admin
+
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
-    "https://127.0.0.1:3000",
+    # "http://127.0.0.1:3000",
+    # "http://localhost:3000",
     "https://www.tea-ly.co.uk"
 ]
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 DATE_FORMAT = "%Y-%m-%d"
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+LOGIN_URL='/admin/login/'
+
+
+SIMPLE_JWT = { 
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "UPDATE_LAST_LOGIN": True
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": os.getenv("SECRET_KEY")
 }

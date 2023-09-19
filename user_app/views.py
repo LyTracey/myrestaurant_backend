@@ -6,11 +6,21 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import logging
-from .serializers import RegisterSerializer, ProfileSerializer, MyTokenRefreshSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .serializers import RegisterSerializer, ProfileSerializer, MyTokenObtainPairSerializer
 from .permissions import IsAdmin, IsUser
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 logger = logging.getLogger(__name__)
+
+# Override authentication method to prevent authentication for public pages
+class JWTAuthenticationSafe(JWTAuthentication):
+    def authenticate(self, request):
+        try:
+            return super().authenticate(request=request)
+        except InvalidToken:
+            return None
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def user_handler(sender, instance, **kwargs):
@@ -28,6 +38,8 @@ def user_handler(sender, instance, **kwargs):
 class RegisterViewset(CreateAPIView):
     queryset = MyUser.objects.all()
     serializer_class = RegisterSerializer
+    authentication_classes = []
+    permission_classes = []
 
 
 class ProfileViewset(RetrieveAPIView, UpdateAPIView):
@@ -36,38 +48,7 @@ class ProfileViewset(RetrieveAPIView, UpdateAPIView):
     lookup_field = "username"
     permission_classes = [IsAdmin | IsUser]
 
+
+
 class MyTokenObtainPairView(TokenObtainPairView):
-
-    def finalize_response(self, request, response, *args, **kwargs):
-
-        new_response = super().finalize_response(request, response, *args, **kwargs)
-
-        if response.data.get('access'):
-            user = MyUser.objects.get(username=request.data['username'])
-            
-            # Return username
-            new_response.data['username'] = user.username
-
-        # Return the refresh token as a http-only cookie - token can be stored as sessionStorage
-
-        if response.data.get('refresh'):
-            refresh_lifetime = 60 * 60 * 24 # Set expiry datetime of refresh cookie to 15 days
-            new_response.set_cookie('refresh', 
-                response.data['refresh'], 
-                max_age=refresh_lifetime, 
-                httponly=True, 
-                secure=True,
-                samesite=None
-            )
-            del new_response.data['refresh']
-    
-        return new_response
-
-
-class MyTokenRefreshView(TokenRefreshView):
-    serializer_class = MyTokenRefreshSerializer
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-    
-    
+    serializer_class = MyTokenObtainPairSerializer

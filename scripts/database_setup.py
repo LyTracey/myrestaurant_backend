@@ -33,14 +33,15 @@ def load_data(json_file, model_func, related_model=None, **kwargs):
         if kwargs.get("model"):
             obj_dict = obj.copy()
 
-            # Get list of instances from list of pks
+            # Get list of instances of related models using listed pks
             for key in obj_dict.keys():
                 if key in MODEL_INSTANCE_FIELDS:
                     obj_dict[key] = related_model.objects.filter(id__in=obj[key])
 
-            model_func(obj_dict, **kwargs, pk=pk)
+            model_func(obj_dict, pk=pk)
         else:
-            model_func(**obj, **kwargs)
+            # Create instance for inventory
+            model_func(**obj)
 
 
 def run():
@@ -54,7 +55,7 @@ def run():
 
     # Load data into database
     load_data(inventory_json, Inventory.objects.create)
-    load_data(menu_json, create_update_menu, Inventory, model=Menu, through_model=MenuInventory)
-    load_data(orders_json, create_update_order, Menu, model=Order, through_model=OrderMenu, inventory_model=Inventory, menu_model=Menu)
+    load_data(menu_json, create_update_menu, Inventory, model=Menu)
+    load_data(orders_json, create_update_order, Menu, model=Order)
 
     

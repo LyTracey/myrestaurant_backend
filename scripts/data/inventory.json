@@ -4,55 +4,63 @@
         "ingredient": "Garlic",
         "slug": "garlic",
         "quantity": 14,
-        "unit_price": "0.20"
+        "unit_price": "0.20",
+        "threshold": 15
     }, 
     {
         "id": 2,
         "ingredient": "Pork Mince",
         "slug": "pork-mince",
         "quantity": 4,
-        "unit_price": "2.35"
+        "unit_price": "2.35",
+        "threshold": 7
     }, 
     {
         "id": 3,
         "ingredient": "Chives",
         "slug": "chives",
-        "quantity": 5,
-        "unit_price": "1.90"
+        "quantity": 0,
+        "unit_price": "1.90",
+        "threshold": 15
     },
     {
         "id": 4,
         "ingredient": "Plain Flour",
         "slug": "plain-flour",
         "quantity": 5,
-        "unit_price": "0.50"
+        "unit_price": "0.50",
+        "threshold": 5
     },
     {
         "id": 5,
         "ingredient": "Butter",
         "slug": "butter",
         "quantity": 10,
-        "unit_price": "1.25"
+        "unit_price": "1.25",
+        "threshold": 5
     },
     {
         "id": 6,
         "ingredient": "Sugar",
         "slug": "sugar",
         "quantity": 5,
-        "unit_price": "1.10"
+        "unit_price": "1.10",
+        "threshold": 3
     },
     {
         "id": 7,
         "ingredient": "Ham",
         "slug": "ham",
         "quantity": 7,
-        "unit_price": "1.20"
+        "unit_price": "1.20",
+        "threshold": 20
     },
     {
         "id": 8,
         "ingredient": "Cheese",
         "slug": "cheese",
         "quantity": 4,
-        "unit_price": "2.50"
+        "unit_price": "2.50",
+        "threshold": 10
     }
 ]

@@ -7,7 +7,9 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 
 class UserCreationForm(forms.ModelForm):
-    # Form to use to create MyUser instance with django-admin
+    """
+        Form to use to create MyUser instance with django-admin
+    """
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
@@ -33,8 +35,9 @@ class UserCreationForm(forms.ModelForm):
 
 
 class UserChangeForm(forms.ModelForm):
-    """A form for updating users. Replaces the password field with admin's
-    disabled password hash display field.
+    """
+        A form for updating users. Replaces the password field with admin's
+        disabled password hash display field.
     """
     password = ReadOnlyPasswordHashField()
 
@@ -48,8 +51,7 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreationForm
 
     # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference specific fields on auth.User.
+    # These override the definitions on the base UserAdmin that reference specific fields on auth.User.
     list_display = ('username', 'is_admin', 'is_staff', 'is_superuser')
     list_filter = ('username',)
 

@@ -5,13 +5,20 @@ from .scripts.serializer_utils import create_update_menu, create_update_order, f
 import json
 
 
+
 logger = logging.getLogger(__name__)
 
-class InventorySerializer(serializers.ModelSerializer):
+class InventorySerializer(serializers.ModelSerializer):        
+    class Meta:
+        model = Inventory
+        exclude = ["image"]
+
+class InventoryReferenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Inventory
-        exclude = ["slug"]
+        fields = ["id", "ingredient"]
+
 
 
 class MenuInventorySerializer(serializers.ModelSerializer):
@@ -46,7 +53,7 @@ class MenuSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = ["id", "title", "image", "description", "ingredients", "price", "units", "available_quantity"]
+        exclude = ["ingredients_cost", "image"]
         lookup_field = "slug"
 
     def to_internal_value(self, data):
@@ -57,15 +64,17 @@ class MenuSerializer(serializers.ModelSerializer):
         return internal_representation
 
     def create(self, validated_data, **kwargs):
-        return create_update_menu(validated_data, Menu, MenuInventory)
+        return create_update_menu(validated_data)
 
     def update(self, instance, validated_data, **kwargs):
-        return create_update_menu(validated_data, Menu, MenuInventory, instance.pk)
+        return create_update_menu(validated_data, instance.pk)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         units = {str(item.id): MenuInventory.objects.get(menu_id=instance.id, inventory_id=item.id).units for item in instance.ingredients.all()}
+        ingredient_names = {ingredient.id: ingredient.ingredient for ingredient in instance.ingredients.all()}
         representation["units"] = units
+        representation["ingredients"] = ingredient_names
         return representation
     
 class QuantitySerializer(serializers.ModelSerializer):
@@ -96,12 +105,12 @@ class OrderSerializer(serializers.ModelSerializer):
             internal_representation = super().to_internal_value(internal_representation)
         return internal_representation
 
-    def create(self, validated_data, **kwargs):
-        return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu)
+    def create(self, validated_data):
+        return create_update_order(validated_data)
 
     def update(self, instance, validated_data):
         if validated_data.get("quantity", False) and validated_data.get("menu_items", False):
-            return create_update_order(validated_data, Order, OrderMenu, Inventory, Menu, instance.pk)
+            return create_update_order(validated_data, instance.pk)
         return super().update(instance, validated_data)
     
     def to_representation(self, instance):
@@ -115,4 +124,3 @@ class DashboardSerializer(serializers.Serializer):
     start_date = serializers.DateField()
     end_date = serializers.DateField()
     frequency = serializers.CharField(max_length=5)
-

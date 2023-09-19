@@ -9,14 +9,16 @@ logger = logging.getLogger(__name__)
 
 class Inventory(models.Model):
     id = models.BigAutoField(primary_key=True)
-    ingredient = models.CharField(max_length=30, unique=True)
+    ingredient = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(unique=True, max_length=30, blank=True)
-    quantity = models.PositiveSmallIntegerField(default=0)
+    quantity = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     unit_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     image = models.ImageField(upload_to='inventory', blank=True)
+    threshold = models.IntegerField(default=10, validators=[MinValueValidator(0, message="Threshold must be 0 or above.")])
     
     class Meta:
         db_table = "inventory"
+        verbose_name_plural = "inventory"
     
     def save(self, *args, **kwargs):
         auto_slug(self, self.ingredient)
@@ -39,9 +41,10 @@ class Menu(models.Model):
 
     class Meta:
         db_table = "menu"
+        verbose_name_plural = "menu"
 
     def save(self, *args, **kwargs):
-        auto_slug(self, self.title) 
+        auto_slug(self, self.title)
         super().save(*args, **kwargs) 
             
     def __str__(self):
@@ -74,6 +77,7 @@ class MenuInventory(models.Model):
 
     class Meta:
         db_table = "menu_inventory"
+        verbose_name_plural = "menu_inventory"
     
 
 class OrderMenu(models.Model):
@@ -84,3 +88,4 @@ class OrderMenu(models.Model):
 
     class Meta:
         db_table = "orders_menu"
+        verbose_name_plural = "orders_menu"

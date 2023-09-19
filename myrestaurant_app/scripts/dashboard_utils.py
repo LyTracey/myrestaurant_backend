@@ -97,23 +97,14 @@ def get_item_sales(start_date=START_DATE, end_date=END_DATE):
     return {menu_item.title: sum(order_item.quantity for order_item in menu_item.ordermenu_set.all()) for menu_item in menu}
 
 
-def get_low_stock(default=10, threshold={}):
+def get_low_stock():
     """
-        Get ingredients that are low in stock, defined as being below the threshold or default value. 
-        If the threshold is not present for an ingredient, the default value is used.
+        Get ingredients that are low in stock, defined as being below the threshold. The default threshold is 10. 
     """
 
-    ingrdeient_quantities = [(inventory_item.ingredient, inventory_item.quantity) for inventory_item in Inventory.objects.all()]
+    ingredient_quantities = [(inventory_item.ingredient, inventory_item.quantity, inventory_item.threshold) for inventory_item in Inventory.objects.all()]
 
-    low_stock = []
-
-    for ingredient, quantity in ingrdeient_quantities:
-        try: 
-            if quantity < threshold[ingredient]:
-                low_stock.append(ingredient)
-        except:
-            if quantity < default:
-                low_stock.append(ingredient)
+    low_stock = [ingredient for ingredient, quantity, threshold in ingredient_quantities if quantity < threshold]
 
     return low_stock
 
@@ -131,8 +122,12 @@ def get_availability(instance):
     """
         Get the available quantity of menu_items (in theory) with the available ingredients in stock.
     """
-    
-    return min([inventory_item.inventory_id.quantity // inventory_item.units for inventory_item in instance.menuinventory_set.all()], default=0)
+    availability = min([inventory_item.inventory_id.quantity // inventory_item.units for inventory_item in instance.menuinventory_set.all()], default=0)
+
+    if availability < 0:
+        return 0
+    else:
+        return availability
 
 
 def summary_statistics(start_date=None, end_date=None, frequency=None):
