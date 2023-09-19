@@ -45,10 +45,11 @@ def create_update_menu (validated_data, pk=None):
     units = validated_data.pop('units')
 
     # Create menu model instance
-    menu_item, _ = Menu.objects.update_or_create(pk=pk, defaults={**validated_data})
+    menu_item, created = Menu.objects.update_or_create(pk=pk, defaults={**validated_data})
     
     # Delete entries in menuInventory
-    MenuInventory.objects.filter(menu_id=pk).delete()
+    if not created:
+        MenuInventory.objects.filter(menu_id=pk).delete()
 
     # Create menu_inventory data instances
     for item in ingredients:

@@ -122,8 +122,12 @@ def get_availability(instance):
     """
         Get the available quantity of menu_items (in theory) with the available ingredients in stock.
     """
-    
-    return min([inventory_item.inventory_id.quantity // inventory_item.units for inventory_item in instance.menuinventory_set.all()], default=0)
+    availability = min([inventory_item.inventory_id.quantity // inventory_item.units for inventory_item in instance.menuinventory_set.all()], default=0)
+
+    if availability < 0:
+        return 0
+    else:
+        return availability
 
 
 def summary_statistics(start_date=None, end_date=None, frequency=None):
