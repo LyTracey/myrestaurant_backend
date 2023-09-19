@@ -54,7 +54,7 @@ def run():
 
     # Load data into database
     load_data(inventory_json, Inventory.objects.create)
-    load_data(menu_json, create_update_menu, Inventory, model=Menu, through_model=MenuInventory)
-    load_data(orders_json, create_update_order, Menu, model=Order, through_model=OrderMenu, inventory_model=Inventory, menu_model=Menu)
+    load_data(menu_json, create_update_menu, Inventory)
+    load_data(orders_json, create_update_order, Menu)
 
     
