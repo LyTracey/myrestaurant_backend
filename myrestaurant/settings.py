@@ -216,14 +216,12 @@ REST_FRAMEWORK = {
 
 CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
-    "https://www.tea-ly.co.uk",
-    "https://moonlight-cafe.tea-ly.co.uk/login"
-] # Allows login request to django admin
+    "https://moonlight-cafe.tea-ly.co.uk"
+]
 
 CORS_ALLOWED_ORIGINS = [
     # "http://localhost:3000",
-    "https://www.tea-ly.co.uk",
-    "https://moonlight-cafe.tea-ly.co.uk/login"
+    "https://moonlight-cafe.tea-ly.co.uk"
 ]
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
