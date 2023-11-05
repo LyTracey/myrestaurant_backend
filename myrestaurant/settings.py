@@ -86,7 +86,6 @@ WSGI_APPLICATION = 'myrestaurant.wsgi.app'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -217,15 +216,14 @@ REST_FRAMEWORK = {
 
 CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
-    "https://www.tea-ly.co.uk", 
-    # "http://localhost:3000",
-    # "http://localhost:8000",
+    "https://www.tea-ly.co.uk",
+    "https://moonlight-cafe.tea-ly.co.uk/login"
 ] # Allows login request to django admin
 
 CORS_ALLOWED_ORIGINS = [
-    # "http://127.0.0.1:3000",
     # "http://localhost:3000",
-    "https://www.tea-ly.co.uk"
+    "https://www.tea-ly.co.uk",
+    "https://moonlight-cafe.tea-ly.co.uk/login"
 ]
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
