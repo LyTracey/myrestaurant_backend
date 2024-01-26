@@ -216,11 +216,14 @@ REST_FRAMEWORK = {
 
 CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
-    "https://moonlight-cafe.tea-ly.co.uk"
+    "https://moonlight-cafe.tea-ly.co.uk",
+    # "http://localhost:3000",
+    # "http://localhost:8000",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     # "http://localhost:3000",
+    # "http://localhost:8000",
     "https://moonlight-cafe.tea-ly.co.uk"
 ]
 

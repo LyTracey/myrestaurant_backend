@@ -1,10 +1,8 @@
 from rest_framework import serializers
 from .models import Inventory, Menu, Order, MenuInventory, OrderMenu
-import logging
 from .scripts.serializer_utils import create_update_menu, create_update_order, format_date
 import json
-
-
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -12,13 +10,11 @@ class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
         exclude = ["image"]
-
+    
 class InventoryReferenceSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Inventory
         fields = ["id", "ingredient"]
-
 
 
 class MenuInventorySerializer(serializers.ModelSerializer):

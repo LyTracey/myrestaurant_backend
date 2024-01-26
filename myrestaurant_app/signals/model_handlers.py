@@ -1,8 +1,9 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from myrestaurant_app.models import MenuInventory, OrderMenu, Order
+from myrestaurant_app.models import MenuInventory, OrderMenu, Order, Inventory
 import logging
 from datetime import datetime
+from myrestaurant_app.scripts.serializer_utils import calculate_menu_availability
 
 logger = logging.getLogger(__name__)
 
@@ -63,5 +64,6 @@ def order_handler(sender, instance, **kwargs):
     # else:
     #     instance.delivered_at = None
 
-
-
+@receiver(post_save, sender=Inventory)
+def inventory_handler(sender, instance, **kwargs):
+    calculate_menu_availability()
