@@ -217,6 +217,7 @@ REST_FRAMEWORK = {
 CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
     "https://moonlight-cafe.tea-ly.co.uk",
+    "https://myrestaurant-frontend-*-lytracey.vercel.app"
     # "http://localhost:3000",
     # "http://localhost:8000",
 ]
@@ -224,7 +225,8 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = [
     # "http://localhost:3000",
     # "http://localhost:8000",
-    "https://moonlight-cafe.tea-ly.co.uk"
+    "https://moonlight-cafe.tea-ly.co.uk",
+    "https://myrestaurant-frontend-*-lytracey.vercel.app"
 ]
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
