@@ -1,4 +1,5 @@
 # Install dependencies
+pip install Django
 pip install -r requirements.txt
 
 # Make migrations
