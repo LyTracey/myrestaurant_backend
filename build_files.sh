@@ -1,6 +1,7 @@
 # Install dependencies
 pwd
-pip install -r ./requirements.txt
+ls
+pip install -r requirements.txt
 
 # Make migrations
 python3.9 manage.py makemigrations
