@@ -2,6 +2,7 @@
 pwd
 ls
 
+pip install --upgrade pip
 pip install -r requirements.txt
 
 # Make migrations

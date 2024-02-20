@@ -2,4 +2,3 @@
 LICENSE
 docker-entrypoint.sh
 general.log
-setup.py
