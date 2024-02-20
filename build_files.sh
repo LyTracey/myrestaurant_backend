@@ -1,6 +1,7 @@
 # Install dependencies
 pwd
 ls
+
 pip install -r requirements.txt
 
 # Make migrations
