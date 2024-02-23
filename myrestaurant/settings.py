@@ -2,31 +2,26 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
-import pymysql
-
-pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables
-load_dotenv(os.path.join(BASE_DIR, "myrestaurant", ".env"))
+DEBUG = False
 
+# Load environment variables from file
+if DEBUG:
+    load_dotenv(os.path.join(BASE_DIR, ".env.local"))
+else:
+    load_dotenv(os.path.join(BASE_DIR, ".env.prod"))
+    
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
+
 os.environ['HTTPS'] = "on"
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,24 +70,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myrestaurant.wsgi.app'
 
-
-# Database
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'URL': os.getenv("DB_URL"),
-        'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT")
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRES_DATABASE"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': os.getenv("POSTGRES_HOST"),
+        'PORT': os.getenv("POSTGRES_PORT")
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -111,7 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
 USE_I18N = True
 
 LANGUAGE_CODE = 'en-GB'
