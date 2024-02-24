@@ -132,15 +132,15 @@ LOGGING = {
     'loggers': {
         'myrestaurant_app': {
             'level': 'DEBUG',
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
         },
         'user_app': {
             'level': 'DEBUG',
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
         },
         'scripts': {
             'level': 'DEBUG',
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
         },
     },
     'formatters': {
