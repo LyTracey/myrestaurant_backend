@@ -120,8 +120,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_files')
 
-if not DEBUG:
-    logging.disable(logging.DEBUG)
+LOG_PATH = os.path.join(BASE_DIR, 'general.log')
+if not os.path.exists(LOG_PATH):
+    open(LOG_PATH, 'w').close()
 
 LOGGING = {
     'version': 1,
@@ -129,7 +130,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'general.log'),
+            'filename': LOG_PATH,
             'level': 'DEBUG',
             'formatter': 'standard',
         },
