@@ -2,7 +2,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
-import logging
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -120,19 +119,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_files')
 
-LOG_PATH = os.path.join(BASE_DIR, 'general.log')
-open(LOG_PATH, 'a+').close()
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': LOG_PATH,
-            'level': 'DEBUG',
-            'formatter': 'standard',
-        },
         'console': {
             'class': 'logging.StreamHandler',
             'level': 'DEBUG',
