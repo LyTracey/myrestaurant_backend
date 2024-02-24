@@ -122,7 +122,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_files')
 
 LOG_PATH = os.path.join(BASE_DIR, 'general.log')
 if not os.path.exists(LOG_PATH):
-    open(LOG_PATH, 'w').close()
+    open(LOG_PATH, 'rw').close()
 
 LOGGING = {
     'version': 1,
