@@ -2,11 +2,12 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = False
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 # Load environment variables from file
 if DEBUG:
