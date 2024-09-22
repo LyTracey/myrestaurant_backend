@@ -136,3 +136,4 @@ dmypy.json
 .vercel
 
 htmlcov
+staticfiles_build

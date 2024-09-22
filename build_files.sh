@@ -5,8 +5,8 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 # Make migrations
-python manage.py makemigrations
-python manage.py migrate
+python3 manage.py makemigrations
+python3 manage.py migrate
 
 # Collect static files 
 python3 manage.py collectstatic
