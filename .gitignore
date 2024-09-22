@@ -103,6 +103,7 @@ celerybeat.pid
 # Environments
 .env*
 .venv
+.myvenv
 env/
 venv/
 ENV/
@@ -133,3 +134,5 @@ dmypy.json
 # Logs
 *.log
 .vercel
+
+htmlcov
