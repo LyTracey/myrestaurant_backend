@@ -137,3 +137,4 @@ dmypy.json
 
 htmlcov
 staticfiles_build
+static_files
