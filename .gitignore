@@ -137,3 +137,4 @@ dmypy.json
 
 # Build
 staticfiles_build
+./myrestaurant_app/migrations

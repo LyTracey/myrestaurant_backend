@@ -6,19 +6,22 @@ from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-DEBUG = False
 
 # Load environment variables from file
-if DEBUG:
-    load_dotenv(os.path.join(BASE_DIR, ".env.local"))
-else:
+IS_PROD = config("IS_PROD", default=True, cast=bool)
+print(IS_PROD)
+if IS_PROD:
     load_dotenv(os.path.join(BASE_DIR, ".env.prod"))
+else:
+    load_dotenv(os.path.join(BASE_DIR, ".env.local"))
     
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 os.environ['HTTPS'] = "on"
 
@@ -105,8 +108,6 @@ USE_I18N = True
 LANGUAGE_CODE = 'en-GB'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user_app.MyUser'
@@ -114,7 +115,6 @@ AUTH_USER_MODEL = 'user_app.MyUser'
 
 # For development purposes
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 MEDIA_URL = 'media/'
@@ -180,9 +180,8 @@ REST_FRAMEWORK = {
 }
 
 CSRF_COOKIE_SECURE = True
-if DEBUG:
-    CSRF_TRUSTED_ORIGINS = [os.getenv('CSRF_TRUSTED_ORIGINS')]
-    CORS_ALLOWED_ORIGINS = [os.getenv('CORS_ALLOWED_ORIGINS')]
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(",")
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(",")
 
 LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
 
