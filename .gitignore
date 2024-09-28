@@ -135,6 +135,5 @@ dmypy.json
 *.log
 .vercel
 
-htmlcov
+# Build
 staticfiles_build
-static_files
