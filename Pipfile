@@ -22,6 +22,7 @@ serve = "python3 manage.py runserver"
 makemigrations = "python3 manage.py makemigrations"
 migrate = "python3 manage.py makemigrations"
 collectstatic = "python3 manage.py collectstatic"
+generate-data = "python3 manage.py runscript database_setup"
 
 [requires]
 python_version = "3.11"

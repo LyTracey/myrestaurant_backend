@@ -9,21 +9,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 
-# Load environment variables from file
+# Load required environment variables for testing
 IS_PROD = config("IS_PROD", default=True, cast=bool)
-print(IS_PROD)
-if IS_PROD:
-    load_dotenv(os.path.join(BASE_DIR, ".env.prod"))
-else:
-    load_dotenv(os.path.join(BASE_DIR, ".env.local"))
-    
 DEBUG = config("DEBUG", default=False, cast=bool)
+ENVIRONMENT = config("ENVIRONMENT", default="dev") 
 
+# Security
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(",")
+CSRF_COOKIE_SECURE = True
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(",")
 
-os.environ['HTTPS'] = "on"
+
+SIMPLE_JWT = { 
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": os.getenv("SECRET_KEY")
+}
+
+if IS_PROD:
+    CSRF_COOKIE_SAMESITE = "Strict"
+    SESSION_COOKIE_SECURE = "True"
+    os.environ['HTTPS'] = "on"
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -85,7 +99,6 @@ DATABASES = {
     }
 }
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'user_app.validators.PasswordValidator',
@@ -101,25 +114,46 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '300/day',
+        'user': '500/day',
+        'burst': '30/min'
+    },
+    'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 
-# Internationalization
-USE_I18N = True
+}
 
-LANGUAGE_CODE = 'en-GB'
 
-# Default primary key field type
+# Models
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 AUTH_USER_MODEL = 'user_app.MyUser'
 
-
-# For development purposes
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
-
+# Build
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_files_build')
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media_files')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_files_build')
 
+
+# Monitoring
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -152,51 +186,12 @@ LOGGING = {
     },
 }
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '300/day',
-        'user': '500/day',
-        'burst': '30/min'
-    },
-    'TEST_REQUEST_RENDERER_CLASSES': [
-        'rest_framework.renderers.MultiPartRenderer',
-        'rest_framework.renderers.JSONRenderer',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
 
-}
-
-CSRF_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(",")
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(",")
-
-LOGIN_DEFAULT_URL = 'http://127.0.0.1:8000/myrestaurant/menu/'
-
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-DATE_FORMAT = "%Y-%m-%d"
-
+# Authentication
 LOGIN_URL='/admin/login/'
 
 
-SIMPLE_JWT = { 
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": True,
-    "ALGORITHM": "HS256",
-    "SIGNING_KEY": os.getenv("SECRET_KEY")
-}
+# Localisation
+LANGUAGE_CODE = 'en-GB'
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+DATE_FORMAT = "%Y-%m-%d"
