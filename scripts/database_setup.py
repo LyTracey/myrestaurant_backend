@@ -46,7 +46,10 @@ def load_data(json_file, model_func, related_model=None, **kwargs):
 
 def run():
     # Clear database
-    flush_db()
+    try:
+        flush_db()
+    except:
+        logger.info("Could not flush database")
 
     # Read json files
     inventory_json = open("scripts/data/inventory.json")
