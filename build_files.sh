@@ -13,3 +13,10 @@ python3 manage.py migrate
 # Collect static files 
 echo "[INFO] Collect static files"
 python3 manage.py collectstatic
+
+# Write defualt data to database if not prod
+if [[ $IS_PROD == "False" ]]
+then
+  echo "[INFO] Writing to database"
+  python3 manage.py runscript database_setup
+fi

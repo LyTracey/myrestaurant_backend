@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from datetime import timedelta
 from decouple import config
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,6 +14,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 IS_PROD = config("IS_PROD", default=True, cast=bool)
 DEBUG = config("DEBUG", default=False, cast=bool)
 ENVIRONMENT = config("ENVIRONMENT", default="dev") 
+
 
 # Security
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -88,14 +90,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myrestaurant.wsgi.app'
 
+POSTGRES_DB = urlparse(os.getenv("DATABASE_URL"))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("POSTGRES_DATABASE"),
-        'USER': os.getenv("POSTGRES_USER"),
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-        'HOST': os.getenv("POSTGRES_HOST"),
-        'PORT': os.getenv("POSTGRES_PORT")
+        'NAME': POSTGRES_DB.path.replace('/', ''),
+        'USER': POSTGRES_DB.username,
+        'PASSWORD': POSTGRES_DB.password,
+        'HOST': POSTGRES_DB.hostname,
+        'PORT': os.getenv("POSTGRES_PORT"),
     }
 }
 
