@@ -16,9 +16,3 @@ python3 manage.py migrate
 echo "[INFO] Collect static files"
 python3 manage.py collectstatic
 
-# Write defualt data to database if preprod branch
-if [[ $ENVIRONMENT == "preprod" ]]
-then
-  echo "[INFO] Writing to database"
-  python3 manage.py runscript database_setup
-fi
