@@ -16,3 +16,6 @@ python3 manage.py migrate
 echo "[INFO] Collect static files"
 python3 manage.py collectstatic
 
+# Create superuser account
+echo "[INFO] Creating superuser"
+python3 manage.py createsuperuser --noinput
