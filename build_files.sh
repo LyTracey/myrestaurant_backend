@@ -18,4 +18,4 @@ python3 manage.py collectstatic
 
 # Create superuser account
 echo "[INFO] Creating superuser"
-python3 manage.py createsuperuser --noinput
+python3 manage.py runscript create_superuser
