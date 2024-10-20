@@ -50,7 +50,7 @@ class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
         exclude = ["ingredients_cost", "image"]
-        lookup_field = "slug"
+        lookup_field = "id"
 
     def to_internal_value(self, data):
         new_data = data.copy()

@@ -79,7 +79,7 @@ class ArchivedOrdersView(generics.ListAPIView):
 class MenuViewSet(viewsets.ModelViewSet): 
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    lookup_field = "slug"
+    lookup_field = "id"
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [(Staff & (Manager | Chef)) | ReadOnly]
     authentication_classes = [JWTAuthenticationSafe]
@@ -103,7 +103,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
     serializer_class = InventorySerializer
     # permission_classes = [(Staff & (Manager | Chef))]
     permission_classes = []
-    lookup_field = "slug"
+    lookup_field = "id"
     authentication_classes = []
 
 
