@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+django-cors-headers = ">=3.14.0"
+django-extensions = ">=3.2.1"
+djangorestframework-simplejwt = ">=5.2.2"
+pillow = ">=10.0.1"
+pandas = ">=2.2.3"
+python-dotenv = ">=1.0.0"
+psycopg2-binary = ">=2.9.9"
+python-decouple = ">=3.8"
+djangorestframework = "*"
+
+[dev-packages]
+
+[scripts]
+serve = "python3 manage.py runserver"
+makemigrations = "python3 manage.py makemigrations"
+migrate = "python3 manage.py makemigrations"
+collectstatic = "python3 manage.py collectstatic"
+generate-data = "python3 manage.py runscript database_setup"
+
+[requires]
+python_version = "3.11"

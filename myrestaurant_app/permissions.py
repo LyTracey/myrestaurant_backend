@@ -33,3 +33,9 @@ class Manager(BasePermission):
         if isinstance(request.user, AnonymousUser):
             return False
         return request.user.mystaff.role == "MANAGER"
+    
+class Superuser(BasePermission):
+    def has_permission(self, request, view):
+        if isinstance(request.user, AnonymousUser):
+            return False
+        return request.user.is_superuser

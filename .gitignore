@@ -101,8 +101,9 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env*
 .venv
+.myvenv
 env/
 venv/
 ENV/
@@ -132,3 +133,8 @@ dmypy.json
 
 # Logs
 *.log
+.vercel
+
+# Build
+static_files_build
+./myrestaurant_app/migrations

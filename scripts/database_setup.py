@@ -16,37 +16,46 @@ def flush_db():
     Inventory.objects.all().delete()
 
 
-def load_data(json_file, model_func, related_model=None, **kwargs):
-    """
-        Populates the database with hard-coded data as defined under fixtures
-        directories in apps.
-    """
+def load_inventory_data(inventory_json):
+    
+    data = json.load(inventory_json)
+    for inventory_obj_data in data:
+        Inventory.objects.create(**inventory_obj_data)
 
-    # Read json file
-    data = json.load(json_file)
-    MODEL_INSTANCE_FIELDS = ["ingredients", "menu_items"]
 
-    # Create objs from json file
-    for obj in data:
-        pk = obj.get("id")
+def load_menu_data(menu_json):
+    
+    data = json.load(menu_json)
+    for menu_obj_data in data:
+        pk = menu_obj_data.get("id")
 
-        if kwargs.get("model"):
-            obj_dict = obj.copy()
+        new_menu_obj = menu_obj_data.copy()
 
-            # Get list of instances of related models using listed pks
-            for key in obj_dict.keys():
-                if key in MODEL_INSTANCE_FIELDS:
-                    obj_dict[key] = related_model.objects.filter(id__in=obj[key])
+        # Get list of instances of related models using listed pks
+        new_menu_obj["ingredients"] = Inventory.objects.filter(id__in=menu_obj_data["ingredients"])
 
-            model_func(obj_dict, pk=pk)
-        else:
-            # Create instance for inventory
-            model_func(**obj)
+        create_update_menu(new_menu_obj, pk=pk)
+        
+        
+def load_order_data(order_json):
+    
+    data = json.load(order_json)
+    for order_obj_data in data:
+
+        new_order_obj = order_obj_data.copy()
+
+        # Get list of instances of related models using listed pks
+        new_order_obj["menu_items"] = Menu.objects.filter(id__in=order_obj_data["menu_items"])
+
+        create_update_order(new_order_obj)     
 
 
 def run():
     # Clear database
-    flush_db()
+    try:
+        flush_db()
+    except:
+        logger.info("Could not flush database")
 
     # Read json files
     inventory_json = open("scripts/data/inventory.json")
@@ -54,8 +63,8 @@ def run():
     orders_json = open("scripts/data/orders.json")
 
     # Load data into database
-    load_data(inventory_json, Inventory.objects.create)
-    load_data(menu_json, create_update_menu, Inventory, model=Menu)
-    load_data(orders_json, create_update_order, Menu, model=Order)
+    load_inventory_data(inventory_json)
+    load_menu_data(menu_json)
+    load_order_data(orders_json)
 
     

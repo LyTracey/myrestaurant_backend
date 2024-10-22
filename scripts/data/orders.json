@@ -1,18 +1,15 @@
 [
-    {
-        "id": 1,
-        "menu_items": [1],
-        "notes": "Extra soy sauce.",
-        "quantity": {"1": 2}
-    },
-    {
-        "id": 2,
-        "menu_items": [2, 3],
-        "quantity": {"2": 1, "3": 1}
-    },
-    {
-        "id": 3,
-        "menu_items": [3],
-        "quantity": {"3": 1}
-    }
+  {
+    "menu_items": ["dumplings"],
+    "notes": "Extra soy sauce.",
+    "quantity": { "dumplings": 2 }
+  },
+  {
+    "menu_items": ["ham-and-cheese-croissant", "cake"],
+    "quantity": { "ham-and-cheese-croissant": 1, "cake": 1 }
+  },
+  {
+    "menu_items": ["cake"],
+    "quantity": { "cake": 1 }
+  }
 ]

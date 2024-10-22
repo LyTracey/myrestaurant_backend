@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import OrderSerializer, MenuSerializer, InventorySerializer, DashboardSerializer, InventoryReferenceSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
-from .permissions import ReadOnly, Staff, Chef, Sales, Manager
+from .permissions import ReadOnly, Staff, Chef, Sales, Manager, Superuser
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, ListAPIView
 from myrestaurant_app.scripts.dashboard_utils import summary_statistics
 from myrestaurant_app.scripts.view_utils import ordered_lte_available
@@ -15,6 +15,9 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from myrestaurant_app.scripts.serializer_utils import return_ingredients
+from rest_framework.decorators import api_view, permission_classes
+from scripts.database_setup import run
+import os
 
 
 logger = logging.getLogger(__name__)
@@ -79,7 +82,7 @@ class ArchivedOrdersView(generics.ListAPIView):
 class MenuViewSet(viewsets.ModelViewSet): 
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    lookup_field = "slug"
+    lookup_field = "id"
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [(Staff & (Manager | Chef)) | ReadOnly]
     authentication_classes = [JWTAuthenticationSafe]
@@ -103,7 +106,7 @@ class InventoryViewSet(viewsets.ModelViewSet):
     serializer_class = InventorySerializer
     # permission_classes = [(Staff & (Manager | Chef))]
     permission_classes = []
-    lookup_field = "slug"
+    lookup_field = "id"
     authentication_classes = []
 
 
@@ -140,3 +143,20 @@ class DashboardStockView(ListAPIView, GenericAPIView):
             "out_of_stock": statistics["out_of_stock"]
         }
         return Response(data=stock_data, status=status.HTTP_200_OK)
+
+@api_view(["POST"])
+@permission_classes([Superuser])
+def reset_db(request):
+    """
+        Reset database data.
+    """
+    if request.method == "POST":
+        try:
+            db_key = request.data.get("reset_db_key", default="")
+            if db_key == os.getenv("RESET_DB_SECRET"):
+                run()
+                return Response("Database successfully reset.", status=status.HTTP_200_OK)
+        except:
+            return Response("Reset key is invalid.", status=status.HTTP_401_UNAUTHORIZED)
+    
+    return Response("Unknown method.", status=status.HTTP_405_METHOD_NOT_ALLOWED)

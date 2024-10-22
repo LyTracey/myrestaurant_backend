@@ -12,7 +12,8 @@ urlpatterns = [
     path('dashboard/', views.DashboardView.as_view(), name="dashboard"),
     path('dashboard-stock/', views.DashboardStockView.as_view(), name="dashboard_stock"),
     path("archive/orders/",  views.ArchivedOrdersView.as_view(), name="archived_orders"),
-    path("inventory-reference/", views.InventoryReferenceView.as_view(), name="inventory_reference")
+    path("inventory-reference/", views.InventoryReferenceView.as_view(), name="inventory_reference"),
+    path("reset-db/", views.reset_db, name="reset_db")
 ]
 
 for url in router.urls:

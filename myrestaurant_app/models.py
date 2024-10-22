@@ -8,9 +8,8 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 class Inventory(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.SlugField(primary_key=True, max_length=100, blank=True)
     ingredient = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(unique=True, max_length=30, blank=True)
     quantity = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     unit_price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     image = models.ImageField(upload_to='inventory', blank=True)
@@ -29,9 +28,8 @@ class Inventory(models.Model):
 
 
 class Menu(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    id = models.SlugField(primary_key=True, max_length=100, blank=True)
     title = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(unique=True, max_length=30, blank=True)
     image = models.ImageField(upload_to='menu', blank=True, null=True)
     description = models.TextField(blank=True)
     ingredients = models.ManyToManyField(Inventory, through="MenuInventory")
