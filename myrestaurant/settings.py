@@ -21,15 +21,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(",")
-CSRF_COOKIE_SECURE = True
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(",")
 if ENVIRONMENT != 'prod':
     CORS_ALLOWED_ORIGIN_REGEXES = os.getenv('CORS_ALLOWED_ORIGIN_REGEXES').split(",")
 
 
 SIMPLE_JWT = { 
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
@@ -39,7 +38,8 @@ SIMPLE_JWT = {
 
 if IS_PROD:
     CSRF_COOKIE_SAMESITE = "Strict"
-    SESSION_COOKIE_SECURE = "True"
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
     os.environ['HTTPS'] = "on"
 
 
