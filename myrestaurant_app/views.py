@@ -36,10 +36,12 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [Staff & (Manager | Sales)]
     
     def create(self, request, *args, **kwargs):
-        serializer = OrderSerializer(data=request.data)
-        quantity = serializer.data["quantity"]
+        quantity = json.loads(request.data.get("quantity"))
         if ordered_lte_available(quantity, Menu):
-            return super().create(serializer.data, *args, **kwargs)
+            serializer = OrderSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({"error": "Quantity ordered is greater than available"}, status=status.HTTP_400_BAD_REQUEST)
     
     def partial_update(self, request, *args, **kwargs):
