@@ -55,10 +55,10 @@ class Order(models.Model):
     notes = models.CharField(max_length=300, blank=True, null=True)
     ordered_at = models.DateTimeField(auto_now_add=True)
     prepared = models.BooleanField(default=False)
-    prepared_at = models.DateTimeField(default=None, null=True)
+    prepared_at = models.DateTimeField(default=None, null=True, blank=True)
     delivered = models.BooleanField(default=False)
-    delivered_at = models.DateTimeField(default=None, null=True)
-    complete = models.BooleanField(default=False, null=True)
+    delivered_at = models.DateTimeField(default=None, null=True, blank=True)
+    complete = models.BooleanField(default=False)
     total_cost = models.DecimalField(max_digits=5, default=0, decimal_places=2)
 
     class Meta:
