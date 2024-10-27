@@ -107,9 +107,8 @@ class MenuViewSet(viewsets.ModelViewSet):
 class InventoryViewSet(viewsets.ModelViewSet):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
-    permission_classes = [(Staff & (Manager | Chef)) | ReadOnly]
+    permission_classes = [Staff & (Manager | Chef)]
     lookup_field = "id"
-    authentication_classes = []
 
 
 class InventoryReferenceView (ListAPIView, GenericAPIView):
